@@ -1,4 +1,4 @@
-# matrix
+# Matrix Library
 Matrix library in C++ to use for matrix calculations and operations!
 
 This is only a side project for me to gain a better understand of C++ and linear algebra.  
