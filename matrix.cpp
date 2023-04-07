@@ -6,11 +6,16 @@
 #define DEF_FLOAT_LEN 4 // default float length
 #define MAX_FLOAT_LEN 12 // max float length
 
-#define D_PRECIS 1e-13 // assumed precision of double
-
 #define MAX_MATRIX_SIZE 0x20000000 // 2^29
 
-
+/**
+ * @brief checks if double is 0 (counting subnormal variables as 0)
+ * 
+ */
+bool Matrix::_is_double_sub_zero(double value) const {
+    return (std::fpclassify(value) == FP_SUBNORMAL) 
+            || (std::fpclassify(value) == FP_ZERO);
+}
 
 #pragma region CONSTRUCTORS
 
@@ -1032,7 +1037,7 @@ double Matrix::determinant() const{
     double scale = 1;
     for(ULL_int i=0; i<_columns; ++i) {
         ULL_int row = i; // starting row == number of past loops
-        while(fabs(M._data[row][i]) < D_PRECIS) {
+        while(_is_double_sub_zero(M._data[row][i])) {
             if(++row == _rows) { // if at end, means at least one 0 on diagonal
                 return 0;
             }
@@ -1042,7 +1047,7 @@ double Matrix::determinant() const{
             scale *= -1;
         }
         for(row=i+1; row<_rows; ++row) { // sweep rows below
-            if(fabs(M._data[row][i]) > D_PRECIS) {
+            if(!_is_double_sub_zero(M._data[row][i])) {
                 double coeff = M._data[row][i] / M._data[i][i];
                 for(ULL_int j=i; j<_columns; ++j) {
                     M._data[row][j] -= coeff * M._data[i][j];
@@ -1082,7 +1087,7 @@ Matrix Matrix::rref() const {
     ULL_int lead = 0; // column of current leading value
     for(ULL_int i=0; i<_rows && lead<_columns; ++i) {
         ULL_int row = i; // current row (start at top of unchanged lead values)
-        while(fabs(M._data[row][lead]) < D_PRECIS) { // while zero
+        while(_is_double_sub_zero(M._data[row][lead])) { // while zero
             ++row;
             if(row == _rows) {
                 row = i;
@@ -1101,7 +1106,7 @@ Matrix Matrix::rref() const {
             M._data[i][j] /= leadingVals[i];
             double tmp = M._data[i][j];
             for(ULL_int k=0; k<_rows; ++k) {
-                if(k != i && fabs(leadingVals[k]) >= D_PRECIS) {
+                if(k != i && !_is_double_sub_zero(leadingVals[k])) {
                     M._data[k][j] -= leadingVals[k] * tmp;
                 }
             }
@@ -1121,7 +1126,7 @@ Matrix Matrix::inverse() const {
         throw std::invalid_argument("Matrix must have data");
     if(_columns != _rows)
         throw std::invalid_argument("Matrix must be square");
-    if(fabs(determinant()) < D_PRECIS) {
+    if(_is_double_sub_zero(determinant())) {
         std::cerr << "Matrix not invertable";
         return Matrix();
     }
@@ -1178,7 +1183,7 @@ std::ostream& operator<<(std::ostream &os, const Matrix& mat) {
         os << "|  ";
         for(ULL_int i=0; i<mat._columns; ++i) {
             os << std::setw(intMaxLen[i] + float_length + (float_length != 0)); 
-            if(fabs(row[i]) < D_PRECIS)
+            if(mat._is_double_sub_zero(row[i]))
                 os << std::setprecision(0) << 0 
                    << std::setprecision(float_length) << "  ";
             else

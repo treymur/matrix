@@ -1,6 +1,3 @@
-- Change zero checks 
-    - value == 0 -> fpclassify(value) == FP_ZERO
-    - value != 0 -> fpclassify(value) == FP_NORMAL
 - Templates
     - Input all containers instead of just vectors
     - Input data with any number type
