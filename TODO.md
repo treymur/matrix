@@ -21,3 +21,4 @@
         - *display as fixed = false*
 - Eigen stuff
     - Complex numbers
+- Convert to a static library
