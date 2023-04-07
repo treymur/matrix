@@ -113,8 +113,6 @@ private:
     ULL_int _columns; // number of columns / size of rows
     unsigned int _floatLen; // float length when printing matrix
     double _floatPrecis; // assumed float percision (based on _floatLen)
-
-    bool _is_double_sub_zero(double value) const;
 };
 
 #endif

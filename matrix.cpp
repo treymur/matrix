@@ -12,7 +12,7 @@
  * @brief checks if double is 0 (counting subnormal variables as 0)
  * 
  */
-bool Matrix::_is_double_sub_zero(double value) const {
+bool _is_double_sub_zero(double value) {
     return (std::fpclassify(value) == FP_SUBNORMAL) 
             || (std::fpclassify(value) == FP_ZERO);
 }
@@ -1183,7 +1183,7 @@ std::ostream& operator<<(std::ostream &os, const Matrix& mat) {
         os << "|  ";
         for(ULL_int i=0; i<mat._columns; ++i) {
             os << std::setw(intMaxLen[i] + float_length + (float_length != 0)); 
-            if(mat._is_double_sub_zero(row[i]))
+            if(_is_double_sub_zero(row[i]))
                 os << std::setprecision(0) << 0 
                    << std::setprecision(float_length) << "  ";
             else
