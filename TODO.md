@@ -22,3 +22,8 @@
 - Eigen stuff
     - Complex numbers
 - Convert to a static library
+- Replace \_data as array rather than vector
+    - Reimpliment constructors
+    - Deconstructor
+    - Reimpliment any functions done with vector library
+    - Remove vector library
