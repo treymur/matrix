@@ -1,0 +1,26 @@
+- Change zero checks 
+    - value == 0 -> fpclassify(value) == FP_ZERO
+    - value != 0 -> fpclassify(value) == FP_NORMAL
+- Templates
+    - Input all containers instead of just vectors
+    - Input data with any number type
+    - New functions:
+        - Matrix to container (when 1 row or column, start with vectors)
+        - Container to Matrix (both horizontal and vertical)
+        - When done, all multiplication outputs to be Matrix
+- New functions
+    - Power function
+    - Operator- function
+    - Constant vector function (what A^inf * k aproaches)
+        - Make sum == 1 (just append row of 1s before rref)
+- Change all ULL_int to size_t
+- OUTPUT SETTINGS
+    - Fix set_floating_point()
+    - Create parameters struct
+        - floatLen = 4
+        - floatPercis = 1e-(floatLen+1)
+        - float with 0s = false
+        - float with 1s = true
+        - *display as fixed = false*
+- Eigen stuff
+    - Complex numbers
