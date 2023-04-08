@@ -1,4 +1,4 @@
-- Templates
+- Templates (CURRENT BRANCH)
     - Input all containers instead of just vectors
         - [Look at](https://stackoverflow.com/questions/48962076/extracting-a-part-of-an-stdinitializer-listt-c)
     - Input data with any number type
@@ -12,17 +12,14 @@
     - Power function
     - Operator- function
     - Constant vector function (what A^inf * k aproaches)
+        - If non, output 0 vector
         - Make sum == 1 (just append row of 1s before rref)
 - Change all ULL_int to size_t
+- Create custom throw paremeters
+    - Check through and remove unessisary empty checks/throws
 - OUTPUT SETTINGS
     - Fix set_floating_point()
     - Move default settings into .h
-    - Create parameters struct
-        - floatLen = 4
-        - floatPercis = 1e-(floatLen+1)
-        - float with 0s = false
-        - float with 1s = true
-        - *display as fixed = false*
 - Eigen stuff
     - Complex numbers
 - Convert to a static library

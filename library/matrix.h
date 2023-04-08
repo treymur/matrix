@@ -8,14 +8,31 @@
 
 #define ULL_int unsigned long long int
 
+
+
 class Matrix {
 public:
+
+    enum orientation {
+        column = 0, // column / vertical
+        c = 0, // column / vertical
+        row = 1, // row / horizontal
+        r = 1, // row / horizontal
+        vertical = 0, // column / vertical
+        v = 0, // column / vertical
+        horizontal = 1, // row / horizontal
+        h = 1 // row / horizontal
+
+    };
+
     /* Constructors */
 
     Matrix();
     Matrix(std::initializer_list<std::initializer_list<double>> in);
+    template <typename T> Matrix(const std::vector<std::vector<T>>& in);
+    Matrix(std::initializer_list<double> in, orientation type=column);
     template <typename T> 
-        Matrix(std::vector<std::vector<T>> in);
+        Matrix(const std::vector<T>& in, orientation type=column);
     Matrix(const Matrix& other);
     Matrix(ULL_int rows, ULL_int columns, double value);
     Matrix(ULL_int rows, ULL_int columns);
@@ -27,6 +44,7 @@ public:
     int num_columns() const;
     std::vector<double> get_row(ULL_int row) const;
     std::vector<double> get_column(ULL_int col) const;
+    std::vector<double> to_vector() const;
     double& at(ULL_int row, ULL_int col);
     int size() const;
     bool empty() const;
@@ -65,7 +83,7 @@ public:
 
     void insert_column(ULL_int col, const std::initializer_list<double>& colNew);
     template <typename T>
-    void insert_column(ULL_int col, const std::vector<T>& colNew);
+        void insert_column(ULL_int col, const std::vector<T>& colNew);
     void insert_column(ULL_int col, double value);
     void insert_column(ULL_int col);
 
@@ -77,6 +95,7 @@ public:
     void erase_column(ULL_int col);
     void clear();
 
+    void augment(const Matrix& other);
     void operator=(const Matrix& other);
 
     /* Binary math functions */
