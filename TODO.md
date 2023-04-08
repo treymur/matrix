@@ -20,6 +20,7 @@
 - OUTPUT SETTINGS
     - Fix set_floating_point()
     - Move default settings into .h
+    - Add seperator for augmented parts
 - Eigen stuff
     - Complex numbers
 - Convert to a static library

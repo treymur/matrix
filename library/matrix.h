@@ -107,12 +107,9 @@ public:
     friend Matrix operator*(double scale, const Matrix& rhs);
     Matrix operator*=(double scale);
 
-    std::vector<double> operator*(const std::vector<double>& vector) const;
-    std::vector<double> operator*(const std::vector<int>& vector) const;
-    friend std::vector<double>
-        operator*(const std::vector<double>& vector, const Matrix& rhs);
-    friend std::vector<double>
-        operator*(const std::vector<int>& vector, const Matrix& rhs);
+    template <typename T> Matrix operator*(const std::vector<T>& vector) const;
+    template <typename T> friend 
+        Matrix operator*(const std::vector<T>& vector, const Matrix& rhs);
 
     /* Uniary math functions */
 

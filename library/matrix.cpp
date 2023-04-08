@@ -825,6 +825,17 @@ void Matrix::clear() {
     _data.clear();
 }
 
+void Matrix::augment(const Matrix& other) {
+    if(_rows != other._rows)
+        throw std::invalid_argument("Matricies must have same column length");
+    _columns += other._columns;
+    for(ULL_int i=0; i<_rows; ++i) {
+        for(double x : other._data[i]) {
+            _data[i].push_back(x);
+        }
+    }
+}
+
 /**
  * @brief set Matrix to be the same as other (does not change float lenght)
  * 
@@ -929,7 +940,8 @@ Matrix Matrix::operator*=(double scale) {
  * @brief multiply Matrix with vector
  * 
  */
-std::vector<double> Matrix::operator*(const std::vector<double>& vector) const {
+template <typename T>
+Matrix Matrix::operator*(const std::vector<T>& vector) const {
     if(empty())
         throw std::domain_error("Matrix must have data");
     if(_columns != vector.size())
@@ -944,44 +956,15 @@ std::vector<double> Matrix::operator*(const std::vector<double>& vector) const {
         }
         product.push_back(sum);
     }
-    return product;
+    return Matrix(product);
 }
 /**
  * @brief multiply Matrix with vector
  * 
  */
-std::vector<double> Matrix::operator*(const std::vector<int>& vector) const {
-    if(empty())
-        throw std::domain_error("Matrix must have data");
-    if(_columns != vector.size())
-        throw std::invalid_argument
-            ("Vector must be same size as number of columns");
-    std::vector<double> product;
-    for(auto rowIter = _data.begin(); rowIter != _data.end(); ++rowIter) {
-        double sum = 0;
-        ULL_int index = 0;
-        for(auto iter = vector.begin(); iter != vector.end(); ++iter) {
-            sum += *iter * rowIter->at(index++);
-        }
-        product.push_back(sum);
-    }
-    return product;
-}
-/**
- * @brief multiply Matrix with vector
- * 
- */
-std::vector<double>
-operator*(const std::vector<double>& vector, const Matrix& rhs) {
-    return rhs.transpose() * vector;
-}
-/**
- * @brief multiply Matrix with vector
- * 
- */
-std::vector<double>
-operator*(const std::vector<int>& vector, const Matrix& rhs) {
-    return rhs.transpose() * vector;
+template <typename T>
+Matrix operator*(const std::vector<T>& vector, const Matrix& rhs) {
+    return (rhs.transpose() * vector).transpose();
 }
 
 #pragma endregion // BINARY_MATH_FUNCTIONS
@@ -1176,7 +1159,6 @@ void Matrix::output_floatLen(unsigned int len) {
 /******************************************************************************/
 #pragma region EXPLICIT_INSTANTIATIONS
 
-
 /* int */
 template Matrix::Matrix(const std::vector<std::vector<int>>& in);
 template Matrix::Matrix(const std::vector<int>& in, orientation type);
@@ -1186,6 +1168,8 @@ template void Matrix::set_row(ULL_int row, const std::vector<int>& rowNew);
 template void Matrix::set_column(ULL_int col, const std::vector<int>& colNew);
 template void Matrix::insert_row(ULL_int row, const std::vector<int>& rowNew);
 template void Matrix::insert_column(ULL_int col, const std::vector<int>& colNew);
+template Matrix Matrix::operator*(const std::vector<int>& vector) const;
+template Matrix operator*(const std::vector<int>& vector, const Matrix& rhs);
 
 
 /* double */
@@ -1197,6 +1181,8 @@ template void Matrix::set_row(ULL_int row, const std::vector<double>& rowNew);
 template void Matrix::set_column(ULL_int col, const std::vector<double>& colNew);
 template void Matrix::insert_row(ULL_int row, const std::vector<double>& rowNew);
 template void Matrix::insert_column(ULL_int col, const std::vector<double>& colNew);
+template Matrix Matrix::operator*(const std::vector<double>& vector) const;
+template Matrix operator*(const std::vector<double>& vector, const Matrix& rhs);
 
 
 /* float */
@@ -1208,5 +1194,7 @@ template void Matrix::set_row(ULL_int row, const std::vector<float>& rowNew);
 template void Matrix::set_column(ULL_int col, const std::vector<float>& colNew);
 template void Matrix::insert_row(ULL_int row, const std::vector<float>& rowNew);
 template void Matrix::insert_column(ULL_int col, const std::vector<float>& colNew);
+template Matrix Matrix::operator*(const std::vector<float>& vector) const;
+template Matrix operator*(const std::vector<float>& vector, const Matrix& rhs);
 
 #pragma endregion // EXPLICIT_INSTANTIATIONS
