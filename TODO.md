@@ -6,6 +6,7 @@
         - If non, output 0 vector
         - Make sum == 1 (just append row of 1s before rref)
 - Change all ULL_int to size_t
+- Create Doxygen Documentation
 - Create custom throw paremeters
     - Check through and remove unessisary empty checks/throws
 - OUTPUT SETTINGS
