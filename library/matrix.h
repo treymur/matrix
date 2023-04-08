@@ -14,8 +14,8 @@ public:
 
     Matrix();
     Matrix(std::initializer_list<std::initializer_list<double>> in);
-    Matrix(std::vector<std::vector<double>> in);
-    Matrix(std::vector<std::vector<int>> in);
+    template <typename T> 
+        Matrix(std::vector<std::vector<T>> in);
     Matrix(const Matrix& other);
     Matrix(ULL_int rows, ULL_int columns, double value);
     Matrix(ULL_int rows, ULL_int columns);
@@ -34,38 +34,38 @@ public:
     /* Edit functions */
 
     void push_back_row(const std::initializer_list<double>& row);
-    void push_back_row(const std::vector<double>& row);
-    void push_back_row(const std::vector<int>& row);
+    template <typename T> 
+        void push_back_row(const std::vector<T>& row);
     void push_back_row(double value);
     void push_back_row();
 
     void push_back_column(const std::initializer_list<double>& col);
-    void push_back_column(const std::vector<double>& col);
-    void push_back_column(const std::vector<int>& col);
+    template <typename T> 
+        void push_back_column(const std::vector<T>& col);
     void push_back_column(double value);
     void push_back_column();
 
     void set_row(ULL_int row, const std::initializer_list<double>& rowNew);
-    void set_row(ULL_int row, const std::vector<double>& rowNew);
-    void set_row(ULL_int row, const std::vector<int>& rowNew);
+    template <typename T>
+        void set_row(ULL_int row, const std::vector<T>& rowNew);
     void set_row(ULL_int row, double value);
     void set_row(ULL_int row);
 
     void set_column(ULL_int col, const std::initializer_list<double>& colNew);
-    void set_column(ULL_int col, const std::vector<double>& colNew);
-    void set_column(ULL_int col, const std::vector<int>& colNew);
+    template <typename T>
+        void set_column(ULL_int col, const std::vector<T>& colNew);
     void set_column(ULL_int col, double value);
     void set_column(ULL_int col);
 
     void insert_row(ULL_int row, const std::initializer_list<double>& rowNew);
-    void insert_row(ULL_int row, const std::vector<double>& rowNew);
-    void insert_row(ULL_int row, const std::vector<int>& rowNew);
+    template <typename T>
+        void insert_row(ULL_int row, const std::vector<T>& rowNew);
     void insert_row(ULL_int row, double value);
     void insert_row(ULL_int row);
 
     void insert_column(ULL_int col, const std::initializer_list<double>& colNew);
-    void insert_column(ULL_int col, const std::vector<double>& colNew);
-    void insert_column(ULL_int col, const std::vector<int>& colNew);
+    template <typename T>
+    void insert_column(ULL_int col, const std::vector<T>& colNew);
     void insert_column(ULL_int col, double value);
     void insert_column(ULL_int col);
 

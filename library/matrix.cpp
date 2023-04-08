@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <iomanip>
 #include <cmath>
+#include <type_traits>
+
 
 #define DEF_FLOAT_LEN 4 // default float length
 #define MAX_FLOAT_LEN 12 // max float length
@@ -60,44 +62,22 @@ Matrix::Matrix(std::initializer_list<std::initializer_list<double>> in) {
 /**
  * @brief Construct a Matrix with vector of vectors
  * 
- * @param in vector<vector<double>>
+ * @param in vector<vector<T>>
  */
-Matrix::Matrix(std::vector<std::vector<double>> in) {
+template <typename T>
+Matrix::Matrix(std::vector<std::vector<T>> in) {
+    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
     if(in.size() > MAX_MATRIX_SIZE)
         throw std::out_of_range("size must be less than MAX_MATRIX_SIZE");
     if(in.size()) { // if not empty
         if(in[0].size() > MAX_MATRIX_SIZE)
             throw std::out_of_range("size must be less than MAX_MATRIX_SIZE");
         _columns = in[0].size();
-        for(std::vector<double> row : in)
+        for(std::vector<T> row : in)
             if(_columns != row.size())
                 throw std::invalid_argument("Rows must be same size");
         _rows = in.size();
-        _data = in;
-    } else {
-        _rows = 0;
-        _columns = 0;
-    }
-    _floatLen = DEF_FLOAT_LEN;
-    _floatPrecis = pow(10, -(DEF_FLOAT_LEN + 1));
-}
-/**
- * @brief Construct a Matrix with vector of vectors
- * 
- * @param in vector<vector<int>>
- */
-Matrix::Matrix(std::vector<std::vector<int>> in) {
-    if(in.size() > MAX_MATRIX_SIZE)
-        throw std::out_of_range("size must be less than MAX_MATRIX_SIZE");
-    if(in.size()) { // if not empty
-        if(in[0].size() > MAX_MATRIX_SIZE)
-            throw std::out_of_range("size must be less than MAX_MATRIX_SIZE");
-        _columns = in[0].size();
-        for(std::vector<int> row : in)
-            if(_columns != row.size())
-                throw std::invalid_argument("Rows must be same size");
-        _rows = in.size();
-        for(std::vector<int> row : in) {
+        for(std::vector<T> row : in) {
             _data.push_back(std::vector<double>(row.begin(), row.end()));
         }
     } else {
@@ -276,26 +256,11 @@ void Matrix::push_back_row(const std::initializer_list<double>& row) {
 /**
  * @brief Adds row at bottom of Matrix
  * 
- * @param row vector of doubles
+ * @param row vector
  */
-void Matrix::push_back_row(const std::vector<double>& row) {
-    if(_rows == MAX_MATRIX_SIZE)
-        throw std::out_of_range("rows at max size");
-    if(row.empty())
-        throw std::invalid_argument("Row cannot be empty");
-    if(empty())
-        _columns = row.size();
-    else if(_columns != row.size())
-        throw std::invalid_argument("Row must be same size as Matrix rows");
-    _data.push_back(row);
-    ++_rows;
-}
-/**
- * @brief Adds row at bottom of Matrix
- * 
- * @param row vector of ints
- */
-void Matrix::push_back_row(const std::vector<int>& row) {
+template <typename T>
+void Matrix::push_back_row(const std::vector<T>& row) {
+    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
     if(_rows == MAX_MATRIX_SIZE)
         throw std::out_of_range("rows at max size");
     if(row.empty())
@@ -361,32 +326,11 @@ void Matrix::push_back_column(const std::initializer_list<double>& col) {
 /**
  * @brief Adds column at right edge of Matrix
  * 
- * @param col vector of doubles
- */
-void Matrix::push_back_column(const std::vector<double>& col) {
-    if(_columns == MAX_MATRIX_SIZE)
-        throw std::out_of_range("columns at max size");
-    if(col.empty())
-        throw std::invalid_argument("Column cannot be empty");
-    if(empty()) {
-        _rows = col.size();
-        for(ULL_int i=0; i<_rows; ++i)
-            _data.push_back(std::vector<double>());
-    } else if(_rows != col.size())
-        throw 
-            std::invalid_argument("Column must be same size as Matrix columns");
-    ULL_int index = 0;
-    for(auto iter = col.begin(); iter != col.end(); ++iter) {
-        _data[index++].push_back(*iter);
-    }
-    ++_columns;
-}
-/**
- * @brief Adds column at right edge of Matrix
- * 
  * @param col vector of ints
  */
-void Matrix::push_back_column(const std::vector<int>& col) {
+template <typename T>
+void Matrix::push_back_column(const std::vector<T>& col) {
+    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
     if(_columns == MAX_MATRIX_SIZE)
         throw std::out_of_range("columns at max size");
     if(col.empty())
@@ -452,22 +396,11 @@ void Matrix::set_row(ULL_int row, const std::initializer_list<double>& rowNew) {
  * @brief Replace row of Matrix at given index
  * 
  * @param row row index of Matrix
- * @param rowNew new row (vector<double>)
- */
-void Matrix::set_row(ULL_int row, const std::vector<double>& rowNew) {
-    if(row >= _rows)
-        throw std::out_of_range("Row does not exist");
-    if(_columns != rowNew.size())
-        throw std::invalid_argument("Row must be same size as Matrix rows");
-    _data[row] = rowNew;
-}
-/**
- * @brief Replace row of Matrix at given index
- * 
- * @param row row index of Matrix
  * @param rowNew new row (vector<int>)
  */
-void Matrix::set_row(ULL_int row, const std::vector<int>& rowNew) {
+template <typename T>
+void Matrix::set_row(ULL_int row, const std::vector<T>& rowNew) {
+    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
     if(row >= _rows)
         throw std::out_of_range("Row does not exist");
     if(_columns != rowNew.size())
@@ -522,26 +455,11 @@ void Matrix::set_column(ULL_int col,
  * @brief Replace column of Matrix at given index
  * 
  * @param col column index of Matrix
- * @param colNew new column (vector<double>)
- */
-void Matrix::set_column(ULL_int col, const std::vector<double>& colNew){
-    if(col >= _columns)
-        throw std::out_of_range("Column does not exist");
-    if(_rows != colNew.size())
-        throw 
-            std::invalid_argument("Column must be same size as Matrix columns");
-    ULL_int index = 0;
-    for(auto iter = colNew.begin(); iter != colNew.end(); ++iter) {
-        _data[index++][col] = *iter;
-    }
-}
-/**
- * @brief Replace column of Matrix at given index
- * 
- * @param col column index of Matrix
  * @param colNew new column (vector<int>)
  */
-void Matrix::set_column(ULL_int col, const std::vector<int>& colNew){
+template <typename T>
+void Matrix::set_column(ULL_int col, const std::vector<T>& colNew){
+    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
     if(col >= _columns)
         throw std::out_of_range("Column does not exist");
     if(_rows != colNew.size())
@@ -599,25 +517,11 @@ void Matrix::insert_row(ULL_int row,
  * @brief Insert row at index and shift rows below
  * 
  * @param row index of Matrix to insert row
- * @param rowNew new row (vector<double>)
- */
-void Matrix::insert_row(ULL_int row, const std::vector<double>& rowNew) {
-    if(_rows == MAX_MATRIX_SIZE)
-        throw std::out_of_range("rows at max size");
-    if(row >= _rows)
-        throw std::out_of_range("Row does not exist");
-    if(_columns != rowNew.size())
-        throw std::invalid_argument("Row must be same size as Matrix rows");
-    _data.insert(_data.begin() + row, rowNew);
-    ++_rows;
-}
-/**
- * @brief Insert row at index and shift rows below
- * 
- * @param row index of Matrix to insert row
  * @param rowNew new row (vector<int>)
  */
-void Matrix::insert_row(ULL_int row, const std::vector<int> & rowNew) {
+template <typename T>
+void Matrix::insert_row(ULL_int row, const std::vector<T>& rowNew) {
+    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
     if(_rows == MAX_MATRIX_SIZE)
         throw std::out_of_range("rows at max size");
     if(row >= _rows)
@@ -681,29 +585,11 @@ void Matrix::insert_column(ULL_int col,
  * @brief Insert column at index and shift columns on the right
  * 
  * @param col index of Matrix to insert column
- * @param colNew new column (vector<double>)
- */
-void Matrix::insert_column(ULL_int col, const std::vector<double>& colNew) {
-    if(_columns == MAX_MATRIX_SIZE)
-        throw std::out_of_range("columns at max size");
-    if(col >= _columns)
-        throw std::out_of_range("Column does not exist");
-    if(_rows != colNew.size())
-        throw 
-            std::invalid_argument("Column must be same size as Matrix columns");
-    ULL_int index = 0;
-    for(auto iter = colNew.begin(); iter != colNew.end(); ++iter, ++index) {
-        _data[index].insert(_data[index].begin() + col, *iter);
-    }
-    ++_columns;
-}
-/**
- * @brief Insert column at index and shift columns on the right
- * 
- * @param col index of Matrix to insert column
  * @param colNew new column (vector<int>)
  */
-void Matrix::insert_column(ULL_int col, const std::vector<int>& colNew) {
+template <typename T>
+void Matrix::insert_column(ULL_int col, const std::vector<T>& colNew) {
+    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
     if(_columns == MAX_MATRIX_SIZE)
         throw std::out_of_range("columns at max size");
     if(col >= _columns)
