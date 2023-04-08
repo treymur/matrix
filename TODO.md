@@ -1,4 +1,4 @@
-- Templates (CURRENT BRANCH)
+- Templates
     - Input all containers instead of just vectors
         - [Look at](https://stackoverflow.com/questions/48962076/extracting-a-part-of-an-stdinitializer-listt-c)
     - Input data with any number type
