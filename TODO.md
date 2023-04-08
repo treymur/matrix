@@ -1,10 +1,13 @@
-- Templates
+- Templates (CURRENT BRANCH)
     - Input all containers instead of just vectors
+        - [Look at](https://stackoverflow.com/questions/48962076/extracting-a-part-of-an-stdinitializer-listt-c)
     - Input data with any number type
+    - Make sure to [check type](https://en.cppreference.com/w/cpp/language/static_assert) (in \<type_traits\>)
     - New functions:
-        - Matrix to container (when 1 row or column, start with vectors)
-        - Container to Matrix (both horizontal and vertical)
+        - Matrix to Vector (when 1 row or column, start with vectors)
+        - Vector to Matrix (both horizontal and vertical)
         - When done, all multiplication outputs to be Matrix
+        - Augment matrix
 - New functions
     - Power function
     - Operator- function
@@ -13,6 +16,7 @@
 - Change all ULL_int to size_t
 - OUTPUT SETTINGS
     - Fix set_floating_point()
+    - Move default settings into .h
     - Create parameters struct
         - floatLen = 4
         - floatPercis = 1e-(floatLen+1)
@@ -22,8 +26,8 @@
 - Eigen stuff
     - Complex numbers
 - Convert to a static library
-- Replace \_data as array rather than vector
-    - Reimpliment constructors
-    - Deconstructor
-    - Reimpliment any functions done with vector library
-    - Remove vector library
+- Prevent need for \<vector\> ??
+    - Replace vector input with container
+    - Replace \_data as array rather than vector
+        - Reimpliment constructors
+        - Deconstructor
