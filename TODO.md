@@ -1,13 +1,4 @@
-- Templates (CURRENT BRANCH)
-    - Input all containers instead of just vectors
-        - [Look at](https://stackoverflow.com/questions/48962076/extracting-a-part-of-an-stdinitializer-listt-c)
-    - Input data with any number type
-    - Make sure to [check type](https://en.cppreference.com/w/cpp/language/static_assert) (in \<type_traits\>)
-    - New functions:
-        - Matrix to Vector (when 1 row or column, start with vectors)
-        - Vector to Matrix (both horizontal and vertical)
-        - When done, all multiplication outputs to be Matrix
-        - Augment matrix
+- Fix output number length when negative decimal > -1
 - New functions
     - Power function
     - Operator- function
