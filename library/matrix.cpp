@@ -3,7 +3,6 @@
 #include <iomanip>
 #include <cmath>
 #include <type_traits>
-#include <algorithm> // max
 
 
 #define DEF_FLOAT_LEN 4 // default float length
