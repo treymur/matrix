@@ -972,6 +972,23 @@ Matrix operator*(const std::vector<T>& vector, const Matrix& rhs) {
     return (rhs.transpose() * vector).transpose();
 }
 
+
+/**
+ * @brief Takes dot product of two vector matricies
+ * 
+ */
+double vec_dot(const Matrix& r, const Matrix& l) {
+    if(r._columns != 1 || l._columns != 1) // change to allow row vectors
+        throw std::invalid_argument("Must be column vectors");
+    if(r._rows != l._rows)
+        throw std::invalid_argument("Vectors must be same size");
+    double sum = 0;
+    for(ULL_int i=0; i<r._rows; ++i) {
+        sum += r._data[i][0] * l._data[i][0];
+    }
+    return sum;
+}
+
 #pragma endregion // BINARY_MATH_FUNCTIONS
 /******************************************************************************/
 #pragma region UNIARY_MATH_FUNCTIONS

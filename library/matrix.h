@@ -110,6 +110,8 @@ public:
     template <typename T> Matrix operator*(const std::vector<T>& vector) const;
     template <typename T> friend 
         Matrix operator*(const std::vector<T>& vector, const Matrix& rhs);
+    
+    friend double vec_dot(const Matrix& r, const Matrix& l);
 
     /* Uniary math functions */
 
