@@ -16,7 +16,7 @@
 - Eigen stuff
     - Complex numbers
 - Convert to a static library
-- Prevent need for \<vector\> ??
+- (challenge?) Prevent need for \<vector\> in header file
     - Replace vector input with container
     - Replace \_data as array rather than vector
         - Reimpliment constructors
