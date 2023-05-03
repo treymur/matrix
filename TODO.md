@@ -1,4 +1,3 @@
-- Fix output number length when negative decimal > -1
 - New functions
     - Power function
     - Operator- function

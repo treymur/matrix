@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <cmath>
 #include <type_traits>
+#include <algorithm> // max
 
 
 #define DEF_FLOAT_LEN 4 // default float length
@@ -1105,14 +1106,16 @@ std::ostream& operator<<(std::ostream &os, const Matrix& mat) {
     /* Find max integer lenghts of each column */
     int *intMaxLen = new int[mat._columns]; // set to 1s
     for(ULL_int i=0; i<mat._columns; ++i) {
-        intMaxLen[i] = 1;
+        intMaxLen[i] = 0;
     }
     bool allInt = true;
     for(std::vector<double> row : mat._data) {
         for(ULL_int i=0; i<mat._columns; ++i) {
             double intPart, floatPart = modf(row[i], &intPart);
-            int intLen = log10(fabs(intPart) + mat._floatPrecis) + 1
-                         + (intPart + mat._floatPrecis < 0); // +1 if negative
+            int intLen = std::to_string((int)(intPart+0.5-(row[i]<0))).length();
+            if((int)(intPart+0.5-(row[i]<0)) == 0 && row[i] < 0) {
+                ++intLen;
+            }
             if(intLen > intMaxLen[i]) {
                 intMaxLen[i] = intLen;
             }
