@@ -5,6 +5,7 @@
         - If non, output 0 vector
         - Make sum == 1 (just append row of 1s before rref)
 - Change all ULL_int to size_t
+- Create Doxygen Documentation
 - Create custom throw paremeters
     - Check through and remove unessisary empty checks/throws
 - OUTPUT SETTINGS
@@ -14,7 +15,7 @@
 - Eigen stuff
     - Complex numbers
 - Convert to a static library
-- Prevent need for \<vector\> ??
+- (challenge?) Prevent need for \<vector\> in header file
     - Replace vector input with container
     - Replace \_data as array rather than vector
         - Reimpliment constructors

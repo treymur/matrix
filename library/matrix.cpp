@@ -826,6 +826,11 @@ void Matrix::clear() {
     _data.clear();
 }
 
+/**
+ * @brief augments matrix to the right side of current matrix
+ * 
+ * @param other matrix to add
+ */
 void Matrix::augment(const Matrix& other) {
     if(_rows != other._rows)
         throw std::invalid_argument("Matricies must have same column length");
