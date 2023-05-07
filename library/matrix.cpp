@@ -95,7 +95,7 @@ Matrix::Matrix(const std::vector<std::vector<T>>& in) {
  * @brief Construct a Matrix of one row/column with list
  * 
  * @param in list of numbers
- * @param type orientaion of vector: (c)olumn/(v)ertical or (r)ow/(h)orizontal
+ * @param type orientaion of vector: Matrix::column or Matrix::row
  */
 Matrix::Matrix(std::initializer_list<double> in, orientation type) {
     if(in.size() > MAX_MATRIX_SIZE)
@@ -125,7 +125,7 @@ Matrix::Matrix(std::initializer_list<double> in, orientation type) {
  * @brief Construct a Matrix of one row/column with list
  * 
  * @param in list of numbers
- * @param type orientaion of vector: (c)olumn/(v)ertical or (r)ow/(h)orizontal
+ * @param type orientaion of vector: Matrix::column or Matrix::row
  */
 template <typename T> 
 Matrix::Matrix(const std::vector<T>& in, orientation type) {
@@ -831,8 +831,12 @@ void Matrix::clear() {
  * @param other matrix to add
  */
 void Matrix::augment(const Matrix& other) {
-    if(_rows != other._rows)
+    if(empty()) {
+        *this = other;
+        return;
+    } else if(_rows != other._rows) {
         throw std::invalid_argument("Matricies must have same column length");
+    }
     _columns += other._columns;
     for(ULL_int i=0; i<_rows; ++i) {
         for(double x : other._data[i]) {
@@ -1214,6 +1218,34 @@ Matrix Matrix::inverse() const {
         I.erase_column(0);
     }
     return I;
+}
+
+/**
+ * @brief Finds QR decompisition of Matrix
+ * 
+ * @return std::pair<Matrix,Matrix>; first = Q, second = R 
+ */
+Matrix::MatrixPair Matrix::qr() const {
+    if(empty())
+        throw std::invalid_argument("Matrix must have data");
+    Matrix Q, R(_columns, _columns);
+    for(ULL_int i=0; i<_columns; ++i) {
+        Matrix col = get_column(i);
+        Matrix colPerp = col;
+        for(ULL_int j=0; j<i; ++j) {
+            Matrix qCol = Q.get_column(j);
+            float dot = col.vec_dot(qCol);
+            R.at(j, i) = dot;
+            colPerp -= qCol * dot;
+        }
+        float colPerpLen = sqrt(colPerp.vec_dot());
+        if(colPerpLen == 0) {
+            throw std::invalid_argument("Columns must be linearly independant");
+        }
+        R.at(i, i) = colPerpLen;
+        Q.augment(colPerp/colPerpLen);
+    }
+    return MatrixPair(Q,R);
 }
 
 #pragma endregion // UNIARY_MATH_FUNCTIONS

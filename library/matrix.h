@@ -14,22 +14,18 @@ class Matrix {
 public:
 
     enum orientation {
-        column = 0, // column / vertical
-        c = 0, // column / vertical
-        row = 1, // row / horizontal
-        r = 1, // row / horizontal
-        vertical = 0, // column / vertical
-        v = 0, // column / vertical
-        horizontal = 1, // row / horizontal
-        h = 1 // row / horizontal
-
+        column,
+        row
     };
+
+    typedef std::pair<Matrix,Matrix> MatrixPair;
 
     /* Constructors */
 
     Matrix();
     Matrix(std::initializer_list<std::initializer_list<double>> in);
-    template <typename T> Matrix(const std::vector<std::vector<T>>& in);
+    template <typename T> 
+        Matrix(const std::vector<std::vector<T>>& in);
     Matrix(std::initializer_list<double> in, orientation type=column);
     template <typename T> 
         Matrix(const std::vector<T>& in, orientation type=column);
@@ -126,6 +122,7 @@ public:
     Matrix transpose() const;
     Matrix rref() const;
     Matrix inverse() const;
+    MatrixPair qr() const;
 
     /* Output */
 
