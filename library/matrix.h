@@ -101,6 +101,10 @@ public:
     /* Binary math functions */
 
     Matrix operator+(const Matrix& other) const;
+    Matrix operator-(const Matrix& other) const;
+    Matrix operator+=(const Matrix& other);
+    Matrix operator-=(const Matrix& other);
+
     Matrix operator*(const Matrix& other) const;
 
     Matrix operator*(double scale) const;
@@ -113,7 +117,6 @@ public:
     
     double vec_dot() const;
     double vec_dot(const Matrix& other) const;
-    friend double vec_dot(const Matrix& r, const Matrix& l);
 
     /* Uniary math functions */
 

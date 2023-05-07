@@ -876,6 +876,42 @@ Matrix Matrix::operator+(const Matrix& other) const {
     }
     return sum;
 }
+/**
+ * @brief Subtract Matricies with equal dimentions
+ * 
+ */
+Matrix Matrix::operator-(const Matrix& other) const {
+    if(empty() || other.empty())
+        throw std::domain_error("Matricies must have data");
+    if(other._columns != _columns || other._rows != _rows)
+        throw std::invalid_argument
+            ("Matricies must have same dimentions for subtraction");
+    Matrix sum;
+    for(ULL_int i=0; i<_rows; ++i) {
+        std::vector<double> rowNew;
+        for(ULL_int j=0; j<_columns; ++j) {
+            rowNew.push_back(_data[i][j] - other._data[i][j]);
+        }
+        sum.push_back_row(rowNew);
+    }
+    return sum;
+}
+/**
+ * @brief Incriment Matrix by another Matrix with equal dimentions
+ * 
+ */
+Matrix Matrix::operator+=(const Matrix& other) {
+    *this = *this + other;
+    return *this;
+}
+/**
+ * @brief Deincriment Matrix by another Matrix with equal dimentions
+ * 
+ */
+Matrix Matrix::operator-=(const Matrix& other) {
+    *this = *this - other;
+    return *this;
+}
 
 /**
  * @brief Multiply Matricices
@@ -1018,13 +1054,6 @@ double Matrix::vec_dot(const Matrix& other) const {
         sum += leftVec[i] * rightVec[i];
     }
     return sum;
-}
-/**
- * @brief Takes dot product of two vector matricies
- * 
- */
-double vec_dot(const Matrix& r, const Matrix& l) {
-    return r.vec_dot(l);
 }
 
 #pragma endregion // BINARY_MATH_FUNCTIONS
