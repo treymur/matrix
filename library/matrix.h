@@ -110,6 +110,8 @@ public:
     Matrix operator*(double scale) const;
     friend Matrix operator*(double scale, const Matrix& rhs);
     Matrix operator*=(double scale);
+    Matrix operator/(double scale) const;
+    Matrix operator/=(double scale);
 
     template <typename T> Matrix operator*(const std::vector<T>& vector) const;
     template <typename T> friend 

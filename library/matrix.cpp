@@ -978,6 +978,42 @@ Matrix Matrix::operator*=(double scale) {
 }
 
 /**
+ * @brief divide Matrix by scale
+ * 
+ */
+Matrix Matrix::operator/(double scale) const {
+    if(scale == 0)
+        throw std::invalid_argument("scale cannot be zero");
+    if(empty())
+        throw std::domain_error("Matrix must have data");
+    Matrix quotient;
+    for(auto rowIter = _data.begin(); rowIter != _data.end(); ++rowIter) {
+        std::vector<double> rowNew;
+        for(auto iter = rowIter->begin(); iter != rowIter->end(); ++iter) {
+            rowNew.push_back(*iter / scale);
+        }
+        quotient.push_back_row(rowNew);
+    }
+    return quotient;
+}
+/**
+ * @brief divide Matrix by scale
+ * 
+ */
+Matrix Matrix::operator/=(double scale) {
+    if(scale == 0)
+        throw std::invalid_argument("scale cannot be zero");
+    if(empty())
+        throw std::domain_error("Matrix must have data");
+    for(auto rowIter = _data.begin(); rowIter != _data.end(); ++rowIter) {
+        for(auto iter = rowIter->begin(); iter != rowIter->end(); ++iter) {
+            *iter /= scale;
+        }
+    }
+    return *this;
+}
+
+/**
  * @brief multiply Matrix with vector
  * 
  */
