@@ -972,21 +972,59 @@ Matrix operator*(const std::vector<T>& vector, const Matrix& rhs) {
     return (rhs.transpose() * vector).transpose();
 }
 
-
+/**
+ * @brief Takes dot product of vector with itself
+ * 
+ */
+double Matrix::vec_dot() const {
+    double sum = 0;
+    if(_columns == 1) {
+        for(ULL_int i=0; i<_rows; ++i) {
+            sum += _data[i][0] * _data[i][0];
+        }
+        return sum;
+    } else if(_rows == 1) {
+        for(ULL_int i=0; i<_columns; ++i) {
+            sum += _data[0][i] * _data[0][i];
+        }
+        return sum;
+    }
+    throw std::invalid_argument("Must use vector");
+}
+/**
+ * @brief Takes dot product of two vector matricies
+ * 
+ */
+double Matrix::vec_dot(const Matrix& other) const {
+    std::vector<double> leftVec, rightVec;
+    if(_columns == 1) {
+        leftVec = get_column(0);
+    } else if(_rows == 1) {
+        leftVec = get_row(0);
+    } else {
+        throw std::invalid_argument("Must use vectors");
+    }
+    if(other._columns == 1) {
+        rightVec = other.get_column(0);
+    } else if(other._rows == 1) {
+        rightVec = other.get_row(0);
+    } else {
+        throw std::invalid_argument("Must use vectors");
+    }
+    if(leftVec.size() != rightVec.size())
+        throw std::invalid_argument("Vectors must be same size");
+    double sum = 0;
+    for(ULL_int i=0; i<leftVec.size(); ++i) {
+        sum += leftVec[i] * rightVec[i];
+    }
+    return sum;
+}
 /**
  * @brief Takes dot product of two vector matricies
  * 
  */
 double vec_dot(const Matrix& r, const Matrix& l) {
-    if(r._columns != 1 || l._columns != 1) // change to allow row vectors
-        throw std::invalid_argument("Must be column vectors");
-    if(r._rows != l._rows)
-        throw std::invalid_argument("Vectors must be same size");
-    double sum = 0;
-    for(ULL_int i=0; i<r._rows; ++i) {
-        sum += r._data[i][0] * l._data[i][0];
-    }
-    return sum;
+    return r.vec_dot(l);
 }
 
 #pragma endregion // BINARY_MATH_FUNCTIONS
