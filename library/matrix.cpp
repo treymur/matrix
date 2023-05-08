@@ -830,7 +830,7 @@ void Matrix::clear() {
  * 
  * @param other matrix to add
  */
-void Matrix::augment(const Matrix& other) {
+void Matrix::augment(const Matrix& other, bool seperator) {
     if(empty()) {
         *this = other;
         return;
@@ -1228,24 +1228,54 @@ Matrix Matrix::inverse() const {
 Matrix::MatrixPair Matrix::qr() const {
     if(empty())
         throw std::invalid_argument("Matrix must have data");
-    Matrix Q, R(_columns, _columns);
+    Matrix Q_matrix, R_matrix(_columns, _columns);
     for(ULL_int i=0; i<_columns; ++i) {
         Matrix col = get_column(i);
         Matrix colPerp = col;
         for(ULL_int j=0; j<i; ++j) {
-            Matrix qCol = Q.get_column(j);
+            Matrix qCol = Q_matrix.get_column(j);
             float dot = col.vec_dot(qCol);
-            R.at(j, i) = dot;
+            R_matrix.at(j, i) = dot;
             colPerp -= qCol * dot;
         }
         float colPerpLen = sqrt(colPerp.vec_dot());
         if(colPerpLen == 0) {
             throw std::invalid_argument("Columns must be linearly independant");
         }
-        R.at(i, i) = colPerpLen;
-        Q.augment(colPerp/colPerpLen);
+        R_matrix.at(i, i) = colPerpLen;
+        Q_matrix.augment(colPerp/colPerpLen);
     }
-    return MatrixPair(Q,R);
+    return MatrixPair(Q_matrix,R_matrix);
+}
+/**
+ * @brief Returns Q or R from QR decompisition
+ * 
+ * @param output Which matrix to output (Matrix::Q or Matrix::R)
+ */
+Matrix Matrix::qr(QR output) const {
+    if(empty())
+        throw std::invalid_argument("Matrix must have data");
+    if(output == Q) {
+        Matrix Q_matrix;
+        for(ULL_int i=0; i<_columns; ++i) {
+            Matrix col = get_column(i);
+            Matrix colPerp = col;
+            for(ULL_int j=0; j<i; ++j) {
+                Matrix qCol = Q_matrix.get_column(j);
+                colPerp -= qCol * col.vec_dot(qCol);
+            }
+            float colPerpLen = sqrt(colPerp.vec_dot());
+            if(colPerpLen == 0) {
+                throw std::invalid_argument("Columns must be linearly independant");
+            }
+            Q_matrix.augment(colPerp/colPerpLen, false);
+        }
+        return Q_matrix;
+    }
+    if(output == R) {
+        return qr().second;
+    }
+    throw std::invalid_argument("Invalid param must be Matrix::Q or Matrix::R");
 }
 
 #pragma endregion // UNIARY_MATH_FUNCTIONS

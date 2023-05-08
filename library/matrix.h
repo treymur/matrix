@@ -18,6 +18,11 @@ public:
         row
     };
 
+    enum QR {
+        Q,
+        R
+    };
+
     typedef std::pair<Matrix,Matrix> MatrixPair;
 
     /* Constructors */
@@ -91,7 +96,7 @@ public:
     void erase_column(ULL_int col);
     void clear();
 
-    void augment(const Matrix& other);
+    void augment(const Matrix& other, bool seperator=true);
     void operator=(const Matrix& other);
 
     /* Binary math functions */
@@ -123,6 +128,9 @@ public:
     Matrix rref() const;
     Matrix inverse() const;
     MatrixPair qr() const;
+    Matrix qr(QR output) const;
+    std::vector<float> eigen_values_approx(double percision=1e-7, 
+                                           int max_iterations=100000) const;
 
     /* Output */
 
