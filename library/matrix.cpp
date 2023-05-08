@@ -1,7 +1,7 @@
 #include "matrix.h"
 #include <stdexcept>
 #include <iomanip>
-#include <cmath>
+#include <cmath> // sqrt()
 #include <type_traits>
 
 
@@ -1278,6 +1278,43 @@ Matrix Matrix::qr(QR output) const {
     throw std::invalid_argument("Invalid param must be Matrix::Q or Matrix::R");
 }
 
+/**
+ * @brief Finds eigenvalues of Matrix if all real as vector<double>
+ * 
+ * @param percision defines upper matrix with values below diagnol < percision
+ *                  (defaults to 10^-12)
+ * @param max_iterations max number of iterations of QR algorithm
+ */
+std::vector<double> 
+Matrix::eigenvalues_approx(double percision, int max_iterations) const {
+    if(empty())
+        throw std::invalid_argument("Matrix must have data");
+    if(_columns != _rows)
+        throw std::invalid_argument("Matrix must be square");
+    bool is_upper = false;
+    Matrix tmp = _data;
+    int count;
+    for(count=0; !is_upper && count<max_iterations; ++count) {
+        MatrixPair QR = tmp.qr();
+        tmp = QR.second * QR.first;
+        is_upper = true;
+        for(ULL_int row=0; row<_rows && is_upper; row++) {
+            for(ULL_int col=0; col<row && is_upper; col++) {
+                if(std::abs(tmp._data[row][col]) > percision) {
+                    is_upper = false;
+                }
+            }
+        }
+    }
+    if(!is_upper)
+        throw std::runtime_error("Could not find values, could be imaginary");
+    std::vector<double> output;
+    for(ULL_int i=0; i<_rows; ++i) {
+        output.push_back(tmp._data[i][i]);
+    }
+    return output;
+}
+
 #pragma endregion // UNIARY_MATH_FUNCTIONS
 /******************************************************************************/
 #pragma region OUTPUT
@@ -1305,7 +1342,7 @@ std::ostream& operator<<(std::ostream &os, const Matrix& mat) {
             if(intLen > intMaxLen[i]) {
                 intMaxLen[i] = intLen;
             }
-            if(fabs(floatPart + mat._floatPrecis) > 2 * mat._floatPrecis) {
+            if(std::abs(floatPart + mat._floatPrecis) > 2 * mat._floatPrecis) {
                 allInt = false;
             }
         }

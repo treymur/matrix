@@ -129,8 +129,10 @@ public:
     Matrix inverse() const;
     MatrixPair qr() const;
     Matrix qr(QR output) const;
-    std::vector<float> eigen_values_approx(double percision=1e-7, 
+    std::vector<double> eigenvalues_approx(double percision=1e-12, 
                                            int max_iterations=100000) const;
+    template <typename T>
+        std::vector<Matrix> eigen_vectors(std::vector<T> eigenValues) const;
 
     /* Output */
 
