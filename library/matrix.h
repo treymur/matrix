@@ -4,10 +4,12 @@
 
 #include <iostream>
 #include <vector>
+#include <set>
 // #include <initializer_list>  /* included in <vector> */
 
 #define ULL_int unsigned long long int
 
+extern bool NICE_BRACKET;
 
 
 class Matrix {
@@ -114,7 +116,8 @@ public:
     Matrix operator/(double scale) const;
     Matrix operator/=(double scale);
 
-    template <typename T> Matrix operator*(const std::vector<T>& vector) const;
+    template <typename T> 
+        Matrix operator*(const std::vector<T>& vector) const;
     template <typename T> friend 
         Matrix operator*(const std::vector<T>& vector, const Matrix& rhs);
     
@@ -131,8 +134,6 @@ public:
     Matrix qr(QR output) const;
     std::vector<double> eigenvalues_approx(double percision=1e-12, 
                                            int max_iterations=100000) const;
-    template <typename T>
-        std::vector<Matrix> eigen_vectors(std::vector<T> eigenValues) const;
 
     /* Output */
 
@@ -145,6 +146,8 @@ private:
     ULL_int _columns; // number of columns / size of rows
     unsigned int _floatLen; // float length when printing matrix
     double _floatPrecis; // assumed float percision (based on _floatLen)
+    std::set<ULL_int> _augment_lines; // location of any augment lines
+    bool _niceBrackets = NICE_BRACKET; // weither to use upperscore in brackets
 };
 
 #endif

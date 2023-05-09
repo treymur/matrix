@@ -9,6 +9,8 @@
 #define MAX_FLOAT_LEN 12 // max float length
 #define MAX_MATRIX_SIZE 0x20000000 // 2^29
 
+bool NICE_BRACKET = false;
+
 #pragma region PRIVATE_FUNCTONS
 
 /**
@@ -164,6 +166,7 @@ Matrix::Matrix(const Matrix& other) {
     _data = other._data;
     _floatLen = other._floatLen;
     _floatPrecis = other._floatPrecis;
+    _augment_lines = other._augment_lines;
 }
 
 /**
@@ -519,8 +522,7 @@ void Matrix::set_row(ULL_int row) {
  * @param col column index of Matrix
  * @param colNew new column (list)
  */
-void Matrix::set_column(ULL_int col,
-                        const std::initializer_list<double>& colNew){
+void Matrix::set_column(ULL_int col, const std::initializer_list<double>& colNew){
     if(col >= _columns)
         throw std::out_of_range("Column does not exist");
     if(_rows != colNew.size())
@@ -582,8 +584,7 @@ void Matrix::set_column(ULL_int col) {
  * @param row index of Matrix to insert row
  * @param rowNew new row (list)
  */
-void Matrix::insert_row(ULL_int row,
-                        const std::initializer_list<double>& rowNew) {
+void Matrix::insert_row(ULL_int row, const std::initializer_list<double>& rowNew) {
     if(_rows == MAX_MATRIX_SIZE)
         throw std::out_of_range("rows at max size");
     if(row >= _rows)
@@ -646,8 +647,7 @@ void Matrix::insert_row(ULL_int row) {
  * @param col index of Matrix to insert column
  * @param colNew new column (list)
  */
-void Matrix::insert_column(ULL_int col, 
-                           const std::initializer_list<double>& colNew) {
+void Matrix::insert_column(ULL_int col, const std::initializer_list<double>& colNew) {
     if(_columns == MAX_MATRIX_SIZE)
         throw std::out_of_range("columns at max size");
     if(col >= _columns)
@@ -834,9 +834,11 @@ void Matrix::augment(const Matrix& other, bool seperator) {
     if(empty()) {
         *this = other;
         return;
-    } else if(_rows != other._rows) {
-        throw std::invalid_argument("Matricies must have same column length");
     }
+    if(_rows != other._rows)
+        throw std::invalid_argument("Matricies must have same column length");
+    if(seperator)
+        _augment_lines.insert(_columns);
     _columns += other._columns;
     for(ULL_int i=0; i<_rows; ++i) {
         for(double x : other._data[i]) {
@@ -853,6 +855,7 @@ void Matrix::operator=(const Matrix& other) {
     _columns = other._columns;
     _rows = other._rows;
     _data = other._data;
+    _augment_lines = other._augment_lines;
 }
 
 
@@ -1243,7 +1246,7 @@ Matrix::MatrixPair Matrix::qr() const {
             throw std::invalid_argument("Columns must be linearly independant");
         }
         R_matrix.at(i, i) = colPerpLen;
-        Q_matrix.augment(colPerp/colPerpLen);
+        Q_matrix.augment(colPerp/colPerpLen, false);
     }
     return MatrixPair(Q_matrix,R_matrix);
 }
@@ -1352,17 +1355,33 @@ std::ostream& operator<<(std::ostream &os, const Matrix& mat) {
         float_length = mat._floatLen;
     }
     os << std::fixed << std::setprecision(float_length);
-    for(std::vector<double> row : mat._data) {
-        os << "|  ";
-        for(ULL_int i=0; i<mat._columns; ++i) {
-            os << std::setw(intMaxLen[i] + float_length + (float_length != 0)); 
-            if(_is_double_sub_zero(row[i]))
+    for(ULL_int row=0; row<mat._rows; ++row) {
+        os << "|";
+        if(mat._niceBrackets && row == 0)
+            os << "‾";
+        else if(row == mat._rows-1)
+            os << "_"; 
+        else
+            os << " ";
+        for(ULL_int col=0; col<mat._columns; ++col) {
+            if(mat._augment_lines.find(col) != mat._augment_lines.end())
+                os << "|";
+            os << " " 
+               << std::setw(intMaxLen[col] + float_length + (float_length != 0)); 
+            if(_is_double_sub_zero(mat._data[row][col]))
                 os << std::setprecision(0) << 0 
-                   << std::setprecision(float_length) << "  ";
+                   << std::setprecision(float_length) << " ";
             else
-                os << row[i] << "  ";
+                os << mat._data[row][col] << " ";
+            // if(col != mat._columns-1)
+            //     os << "  ";
         }
-        os << "|" << std::endl;
+        if(mat._niceBrackets && row == 0)
+            os << "‾|" << std::endl;
+        else if(row == mat._rows-1)
+            os << "_|" << std::endl;
+        else
+            os << " |" << std::endl;
     }
     delete[] intMaxLen;
     return os;
