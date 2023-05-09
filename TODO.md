@@ -1,20 +1,16 @@
 - New functions
     - Power function
-    - Operator- function
     - Constant vector function (what A^inf * k aproaches)
         - If non, output 0 vector
         - Make sum == 1 (just append row of 1s before rref)
-- Change all ULL_int to size_t
-- Create Doxygen Documentation
+- Convert to a static library
 - Create custom throw paremeters
     - Check through and remove unessisary empty checks/throws
 - OUTPUT SETTINGS
     - Fix set_floating_point()
     - Move default settings into .h
-    - Add seperator for augmented parts
-- Eigen stuff
-    - Complex numbers
-- Convert to a static library
+- Complex number support
+- Create Doxygen Documentation
 - (challenge?) Prevent need for \<vector\> in header file
     - Replace vector input with container
     - Replace \_data as array rather than vector
