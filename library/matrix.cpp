@@ -4,6 +4,7 @@
 #include <cmath> // sqrt()
 #include <type_traits>
 
+using namespace std;
 
 #define DEF_FLOAT_LEN 4 // default float length
 #define MAX_FLOAT_LEN 12 // max float length
@@ -18,8 +19,8 @@ bool NICE_BRACKET = false;
  * 
  */
 bool _is_double_sub_zero(double value) {
-    return (std::fpclassify(value) == FP_SUBNORMAL) 
-            || (std::fpclassify(value) == FP_ZERO);
+    return (fpclassify(value) == FP_SUBNORMAL) 
+            || (fpclassify(value) == FP_ZERO);
 }
 
 #pragma endregion // PRIVATE_FUNCTONS
@@ -42,15 +43,15 @@ Matrix::Matrix() {
  * 
  * @param in list of lists of doubles
  */
-Matrix::Matrix(std::initializer_list<std::initializer_list<double>> in) {
+Matrix::Matrix(initializer_list<initializer_list<double>> in) {
     if(in.size()) { // if 'in' is not empty
         _columns = in.begin()->size(); // sets columns to size of first list
         _rows = 0;
         for(auto it = in.begin(); it != in.end(); ++it) {
             if(_columns != it->size()) { // check row length == columns
-                throw std::invalid_argument("Rows must be same size");
+                throw invalid_argument("Rows must be same size");
             }
-            std::vector<double> row;
+            vector<double> row;
             for(auto it2 = it->begin(); it2 != it->end(); ++it2) {
                 row.push_back(*it2);
             }
@@ -70,20 +71,20 @@ Matrix::Matrix(std::initializer_list<std::initializer_list<double>> in) {
  * @param in vector<vector<T>>
  */
 template <typename T>
-Matrix::Matrix(const std::vector<std::vector<T>>& in) {
-    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
+Matrix::Matrix(const vector<vector<T>>& in) {
+    static_assert(is_arithmetic<T>::value, "Vector must be arithmetic");
     if(in.size() > MAX_MATRIX_SIZE)
-        throw std::out_of_range("size must be less than MAX_MATRIX_SIZE");
+        throw out_of_range("size must be less than MAX_MATRIX_SIZE");
     if(in.size()) { // if not empty
         if(in[0].size() > MAX_MATRIX_SIZE)
-            throw std::out_of_range("size must be less than MAX_MATRIX_SIZE");
+            throw out_of_range("size must be less than MAX_MATRIX_SIZE");
         _columns = in[0].size();
-        for(std::vector<T> row : in)
+        for(vector<T> row : in)
             if(_columns != row.size())
-                throw std::invalid_argument("Rows must be same size");
+                throw invalid_argument("Rows must be same size");
         _rows = in.size();
-        for(std::vector<T> row : in) {
-            _data.push_back(std::vector<double>(row.begin(), row.end()));
+        for(vector<T> row : in) {
+            _data.push_back(vector<double>(row.begin(), row.end()));
         }
     } else { // list empty
         _rows = 0;
@@ -99,22 +100,22 @@ Matrix::Matrix(const std::vector<std::vector<T>>& in) {
  * @param in list of numbers
  * @param type orientaion of vector: Matrix::column or Matrix::row
  */
-Matrix::Matrix(std::initializer_list<double> in, orientation type) {
+Matrix::Matrix(initializer_list<double> in, orientation type) {
     if(in.size() > MAX_MATRIX_SIZE)
-        throw std::out_of_range("size must be less than MAX_MATRIX_SIZE");
+        throw out_of_range("size must be less than MAX_MATRIX_SIZE");
     if(in.size()) { // if not empty
         if(type == column) {
             _columns = 1;
             _rows = in.size();
             for(auto it = in.begin(); it != in.end(); ++it) {
-                _data.push_back(std::vector<double>({*it}));
+                _data.push_back(vector<double>({*it}));
             }
         } else if (type == row) {
             _rows = 1;
             _columns = in.size();
-            _data.push_back(std::vector<double>(in.begin(), in.end()));
+            _data.push_back(vector<double>(in.begin(), in.end()));
         } else
-            throw std::invalid_argument("Invalid orientation parameter");
+            throw invalid_argument("Invalid orientation parameter");
 
     } else { // list empty
         _rows = 0;
@@ -130,22 +131,22 @@ Matrix::Matrix(std::initializer_list<double> in, orientation type) {
  * @param type orientaion of vector: Matrix::column or Matrix::row
  */
 template <typename T> 
-Matrix::Matrix(const std::vector<T>& in, orientation type) {
+Matrix::Matrix(const vector<T>& in, orientation type) {
     if(in.size() > MAX_MATRIX_SIZE)
-        throw std::out_of_range("size must be less than MAX_MATRIX_SIZE");
+        throw out_of_range("size must be less than MAX_MATRIX_SIZE");
     if(in.size()) { // if not empty
         if(type == column) {
             _columns = 1;
             _rows = in.size();
             for(auto it = in.begin(); it != in.end(); ++it) {
-                _data.push_back(std::vector<double>({(double)*it}));
+                _data.push_back(vector<double>({(double)*it}));
             }
         } else if (type == row) {
             _rows = 1;
             _columns = in.size();
-            _data.push_back(std::vector<double>(in.begin(), in.end()));
+            _data.push_back(vector<double>(in.begin(), in.end()));
         } else
-            throw std::invalid_argument("Invalid orientation parameter");
+            throw invalid_argument("Invalid orientation parameter");
 
     } else { // list empty
         _rows = 0;
@@ -176,17 +177,17 @@ Matrix::Matrix(const Matrix& other) {
  * @param columns number of columns in Matrix
  * @param value value to fill Matrix
  */
-Matrix::Matrix(ULL_int rows, ULL_int columns, double value) {
+Matrix::Matrix(size_t rows, size_t columns, double value) {
     if(rows > MAX_MATRIX_SIZE || columns > MAX_MATRIX_SIZE)
-        throw std::out_of_range("size must be less than MAX_MATRIX_SIZE");
+        throw out_of_range("size must be less than MAX_MATRIX_SIZE");
     if(columns == 0 || rows == 0) {
         _rows = 0;
         _columns = 0;
     } else {
         _rows = rows;
         _columns = columns;
-        for(ULL_int i=0; i<rows; ++i) {
-            _data.push_back(std::vector<double>(columns, value));
+        for(size_t i=0; i<rows; ++i) {
+            _data.push_back(vector<double>(columns, value));
         }
     }
     _floatLen = DEF_FLOAT_LEN;
@@ -198,17 +199,17 @@ Matrix::Matrix(ULL_int rows, ULL_int columns, double value) {
  * @param rows number of rows in Matrix
  * @param columns number of columns in Matrix
  */
-Matrix::Matrix(ULL_int rows, ULL_int columns) {
+Matrix::Matrix(size_t rows, size_t columns) {
     if(rows > MAX_MATRIX_SIZE || columns > MAX_MATRIX_SIZE)
-        throw std::out_of_range("size must be less than MAX_MATRIX_SIZE");
+        throw out_of_range("size must be less than MAX_MATRIX_SIZE");
     if(columns == 0 || rows == 0) {
         _rows = 0;
         _columns = 0;
     } else {
         _rows = rows;
         _columns = columns;
-        for(ULL_int i=0; i<rows; ++i) {
-            _data.push_back(std::vector<double>(columns));
+        for(size_t i=0; i<rows; ++i) {
+            _data.push_back(vector<double>(columns));
         }
     }
     _floatLen = DEF_FLOAT_LEN;
@@ -220,15 +221,15 @@ Matrix::Matrix(ULL_int rows, ULL_int columns) {
  * 
  * @param identitySize size of rows/columns of identity matrix
  */
-Matrix::Matrix(ULL_int identitySize) {
+Matrix::Matrix(size_t identitySize) {
     if(identitySize > MAX_MATRIX_SIZE)
-        throw std::out_of_range("size must be less than MAX_MATRIX_SIZE");
+        throw out_of_range("size must be less than MAX_MATRIX_SIZE");
     if(!identitySize) // if == 0
-        throw std::invalid_argument("identity size must be greater than 0");
+        throw invalid_argument("identity size must be greater than 0");
     _rows = identitySize;
     _columns = identitySize;
-    for(ULL_int i=0; i<identitySize; ++i) {
-        _data.push_back(std::vector<double>(identitySize));
+    for(size_t i=0; i<identitySize; ++i) {
+        _data.push_back(vector<double>(identitySize));
         _data[i][i] = 1;
     }
     _floatLen = DEF_FLOAT_LEN;
@@ -256,38 +257,38 @@ int Matrix::num_columns() const {
  * @param row row of Matrix to retrieve
  * @return vector<double> of row
  */
-std::vector<double> Matrix::get_row(ULL_int row) const {
+vector<double> Matrix::get_row(size_t row) const {
     if(row >= _rows)
-        throw std::out_of_range("Row does not exist");
+        throw out_of_range("Row does not exist");
     return _data[row];
 }
 /**
  * @param col column of Matrix to retrieve
  * @return vector<double> of column
  */
-std::vector<double> Matrix::get_column(ULL_int col) const {
+vector<double> Matrix::get_column(size_t col) const {
     if(col >= _columns)
-        throw std::out_of_range("Column does not exist");
-    std::vector<double> column;
-    for(std::vector<double> row : _data) {
+        throw out_of_range("Column does not exist");
+    vector<double> column;
+    for(vector<double> row : _data) {
         column.push_back(row[col]);
     }
     return column;
 }
 
-std::vector<double> Matrix::to_vector() const {
+vector<double> Matrix::to_vector() const {
     if(empty())
-        return std::vector<double>();
+        return vector<double>();
     if(_rows == 1) {
         return _data[0];
     } else if (_columns == 1) {
-        std::vector<double> column;
-        for(std::vector<double> row : _data) {
+        vector<double> column;
+        for(vector<double> row : _data) {
             column.push_back(row[0]);
         }
         return column;
     }
-    throw std::invalid_argument("Must be only 1 row or column");
+    throw invalid_argument("Must be only 1 row or column");
 }
 
 /**
@@ -295,9 +296,9 @@ std::vector<double> Matrix::to_vector() const {
  * @param col column of Matrix
  * @return value at given row and column
  */
-double& Matrix::at(ULL_int row, ULL_int col) {
+double& Matrix::at(size_t row, size_t col) {
     if(row >= _rows || col >= _columns)
-        throw std::out_of_range("Index does not exist");
+        throw out_of_range("Index does not exist");
     return _data[row][col];
 }
 
@@ -324,15 +325,15 @@ bool Matrix::empty() const {
  * 
  * @param row list of doubles
  */
-void Matrix::push_back_row(const std::initializer_list<double>& row) {    
+void Matrix::push_back_row(const initializer_list<double>& row) {    
     if(_rows == MAX_MATRIX_SIZE)
-        throw std::out_of_range("rows at max size");
+        throw out_of_range("rows at max size");
     if(row.begin() == row.end())
-        throw std::invalid_argument("Row cannot be empty");
+        throw invalid_argument("Row cannot be empty");
     if(empty())
         _columns = row.size();
     else if(_columns != row.size())
-        throw std::invalid_argument("Row must be same size as Matrix rows");
+        throw invalid_argument("Row must be same size as Matrix rows");
     _data.push_back(row);
     ++_rows;
 }
@@ -342,17 +343,17 @@ void Matrix::push_back_row(const std::initializer_list<double>& row) {
  * @param row vector
  */
 template <typename T>
-void Matrix::push_back_row(const std::vector<T>& row) {
-    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
+void Matrix::push_back_row(const vector<T>& row) {
+    static_assert(is_arithmetic<T>::value, "Vector must be arithmetic");
     if(_rows == MAX_MATRIX_SIZE)
-        throw std::out_of_range("rows at max size");
+        throw out_of_range("rows at max size");
     if(row.empty())
-        throw std::invalid_argument("Row cannot be empty");
+        throw invalid_argument("Row cannot be empty");
     if(empty())
         _columns = row.size();
     else if(_columns != row.size())
-        throw std::invalid_argument("Row must be same size as Matrix rows");
-    _data.push_back(std::vector<double>(row.begin(), row.end()));
+        throw invalid_argument("Row must be same size as Matrix rows");
+    _data.push_back(vector<double>(row.begin(), row.end()));
     ++_rows;
 }
 /**
@@ -362,10 +363,10 @@ void Matrix::push_back_row(const std::vector<T>& row) {
  */
 void Matrix::push_back_row(double value) {
     if(_rows == MAX_MATRIX_SIZE)
-        throw std::out_of_range("rows at max size");
+        throw out_of_range("rows at max size");
     if(empty())
-        throw std::domain_error("Must have data to add row without size");
-    std::vector<double> row(_columns, value);
+        throw domain_error("Must have data to add row without size");
+    vector<double> row(_columns, value);
     _data.push_back(row);
     ++_rows;
 }
@@ -375,10 +376,10 @@ void Matrix::push_back_row(double value) {
  */
 void Matrix::push_back_row() {
     if(_rows == MAX_MATRIX_SIZE)
-        throw std::out_of_range("rows at max size");
+        throw out_of_range("rows at max size");
     if(empty())
-        throw std::domain_error("Must have data to add row without size");
-    std::vector<double> row(_columns);
+        throw domain_error("Must have data to add row without size");
+    vector<double> row(_columns);
     _data.push_back(row);
     ++_rows;
 }
@@ -388,19 +389,19 @@ void Matrix::push_back_row() {
  * 
  * @param col list of doubles
  */
-void Matrix::push_back_column(const std::initializer_list<double>& col) {
+void Matrix::push_back_column(const initializer_list<double>& col) {
     if(_columns == MAX_MATRIX_SIZE)
-        throw std::out_of_range("columns at max size");
+        throw out_of_range("columns at max size");
     if(col.begin() == col.end())
-        throw std::invalid_argument("Column cannot be empty");
+        throw invalid_argument("Column cannot be empty");
     if(empty()) {
         _rows = col.size();
-        for(ULL_int i=0; i<_rows; ++i)
-            _data.push_back(std::vector<double>());
+        for(size_t i=0; i<_rows; ++i)
+            _data.push_back(vector<double>());
     } else if(_rows != col.size())
         throw 
-            std::invalid_argument("Column must be same size as Matrix columns");
-    ULL_int index = 0;
+            invalid_argument("Column must be same size as Matrix columns");
+    size_t index = 0;
     for(auto iter = col.begin(); iter != col.end(); ++iter) {
         _data[index++].push_back(*iter);
     }
@@ -412,21 +413,21 @@ void Matrix::push_back_column(const std::initializer_list<double>& col) {
  * @param col vector of ints
  */
 template <typename T>
-void Matrix::push_back_column(const std::vector<T>& col) {
-    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
+void Matrix::push_back_column(const vector<T>& col) {
+    static_assert(is_arithmetic<T>::value, "Vector must be arithmetic");
     if(_columns == MAX_MATRIX_SIZE)
-        throw std::out_of_range("columns at max size");
+        throw out_of_range("columns at max size");
     if(col.empty())
-        throw std::invalid_argument("Column cannot be empty");
+        throw invalid_argument("Column cannot be empty");
     if(empty()) {
         _rows = col.size();
-        for(ULL_int i=0; i<_rows; ++i)
-            _data.push_back(std::vector<double>());
+        for(size_t i=0; i<_rows; ++i)
+            _data.push_back(vector<double>());
     } else if(_rows != col.size())
         throw 
-            std::invalid_argument("Column must be same size as Matrix columns");
-    std::vector<double> colNew;
-    ULL_int index = 0;
+            invalid_argument("Column must be same size as Matrix columns");
+    vector<double> colNew;
+    size_t index = 0;
     for(auto iter = col.begin(); iter != col.end(); ++iter) {
         _data[index++].push_back(*iter);
     }
@@ -439,9 +440,9 @@ void Matrix::push_back_column(const std::vector<T>& col) {
  */
 void Matrix::push_back_column(double value) {
     if(_columns == MAX_MATRIX_SIZE)
-        throw std::out_of_range("columns at max size");
+        throw out_of_range("columns at max size");
     if(empty())
-        throw std::domain_error("Must have data to add column without size");
+        throw domain_error("Must have data to add column without size");
     for(auto iter = _data.begin(); iter != _data.end(); ++iter) {
         iter->push_back(value);
     }
@@ -453,9 +454,9 @@ void Matrix::push_back_column(double value) {
  */
 void Matrix::push_back_column() {
     if(_columns == MAX_MATRIX_SIZE)
-        throw std::out_of_range("columns at max size");
+        throw out_of_range("columns at max size");
     if(empty())
-        throw std::domain_error("Must have data to add column without size");
+        throw domain_error("Must have data to add column without size");
     for(auto iter = _data.begin(); iter != _data.end(); ++iter) {
         iter->push_back(0);
     }
@@ -468,11 +469,11 @@ void Matrix::push_back_column() {
  * @param row row index of Matrix
  * @param rowNew new row (list)
  */
-void Matrix::set_row(ULL_int row, const std::initializer_list<double>& rowNew) {
+void Matrix::set_row(size_t row, const initializer_list<double>& rowNew) {
     if(row >= _rows)
-        throw std::out_of_range("Row does not exist");
+        throw out_of_range("Row does not exist");
     if(_columns != rowNew.size())
-        throw std::invalid_argument("Row must be same size as Matrix rows");
+        throw invalid_argument("Row must be same size as Matrix rows");
     _data[row] = rowNew;
 }
 /**
@@ -482,13 +483,13 @@ void Matrix::set_row(ULL_int row, const std::initializer_list<double>& rowNew) {
  * @param rowNew new row (vector<int>)
  */
 template <typename T>
-void Matrix::set_row(ULL_int row, const std::vector<T>& rowNew) {
-    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
+void Matrix::set_row(size_t row, const vector<T>& rowNew) {
+    static_assert(is_arithmetic<T>::value, "Vector must be arithmetic");
     if(row >= _rows)
-        throw std::out_of_range("Row does not exist");
+        throw out_of_range("Row does not exist");
     if(_columns != rowNew.size())
-        throw std::invalid_argument("Row must be same size as Matrix rows");
-    _data[row] = std::vector<double>(rowNew.begin(), rowNew.end());
+        throw invalid_argument("Row must be same size as Matrix rows");
+    _data[row] = vector<double>(rowNew.begin(), rowNew.end());
 }
 /**
  * @brief Replace row of Matrix at given index
@@ -496,10 +497,10 @@ void Matrix::set_row(ULL_int row, const std::vector<T>& rowNew) {
  * @param row row index of Matrix
  * @param value values in new row
  */
-void Matrix::set_row(ULL_int row, double value) {
+void Matrix::set_row(size_t row, double value) {
     if(row >= _rows)
-        throw std::out_of_range("Row does not exist");
-    for(ULL_int i=0; i<_columns; ++i) {
+        throw out_of_range("Row does not exist");
+    for(size_t i=0; i<_columns; ++i) {
         _data[row][i] = value;
     }
 }
@@ -508,10 +509,10 @@ void Matrix::set_row(ULL_int row, double value) {
  * 
  * @param row row index of Matrix
  */
-void Matrix::set_row(ULL_int row) {
+void Matrix::set_row(size_t row) {
     if(row >= _rows)
-        throw std::out_of_range("Row does not exist");
-    for(ULL_int i=0; i<_columns; ++i) {
+        throw out_of_range("Row does not exist");
+    for(size_t i=0; i<_columns; ++i) {
         _data[row][i] = 0;
     }
 }
@@ -522,13 +523,13 @@ void Matrix::set_row(ULL_int row) {
  * @param col column index of Matrix
  * @param colNew new column (list)
  */
-void Matrix::set_column(ULL_int col, const std::initializer_list<double>& colNew){
+void Matrix::set_column(size_t col, const initializer_list<double>& colNew){
     if(col >= _columns)
-        throw std::out_of_range("Column does not exist");
+        throw out_of_range("Column does not exist");
     if(_rows != colNew.size())
         throw 
-            std::invalid_argument("Column must be same size as Matrix columns");
-    ULL_int index = 0;
+            invalid_argument("Column must be same size as Matrix columns");
+    size_t index = 0;
     for(auto iter = colNew.begin(); iter != colNew.end(); ++iter) {
         _data[index++][col] = *iter;
     }
@@ -540,14 +541,14 @@ void Matrix::set_column(ULL_int col, const std::initializer_list<double>& colNew
  * @param colNew new column (vector<int>)
  */
 template <typename T>
-void Matrix::set_column(ULL_int col, const std::vector<T>& colNew){
-    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
+void Matrix::set_column(size_t col, const vector<T>& colNew){
+    static_assert(is_arithmetic<T>::value, "Vector must be arithmetic");
     if(col >= _columns)
-        throw std::out_of_range("Column does not exist");
+        throw out_of_range("Column does not exist");
     if(_rows != colNew.size())
         throw 
-            std::invalid_argument("Column must be same size as Matrix columns");
-    ULL_int index = 0;
+            invalid_argument("Column must be same size as Matrix columns");
+    size_t index = 0;
     for(auto iter = colNew.begin(); iter != colNew.end(); ++iter) {
         _data[index++][col] = *iter;
     }
@@ -558,10 +559,10 @@ void Matrix::set_column(ULL_int col, const std::vector<T>& colNew){
  * @param col column index of Matrix
  * @param value values in new column
  */
-void Matrix::set_column(ULL_int col, double value) {
+void Matrix::set_column(size_t col, double value) {
     if(col >= _columns)
-        throw std::out_of_range("Column does not exist");
-    for(ULL_int i=0; i<_rows; ++i) {
+        throw out_of_range("Column does not exist");
+    for(size_t i=0; i<_rows; ++i) {
         _data[i][col] = value;
     }
 }
@@ -570,10 +571,10 @@ void Matrix::set_column(ULL_int col, double value) {
  * 
  * @param col column index of Matrix
  */
-void Matrix::set_column(ULL_int col) {
+void Matrix::set_column(size_t col) {
     if(col >= _columns)
-        throw std::out_of_range("Column does not exist");
-    for(ULL_int i=0; i<_rows; ++i) {
+        throw out_of_range("Column does not exist");
+    for(size_t i=0; i<_rows; ++i) {
         _data[i][col] = 0;
     }
 }
@@ -584,13 +585,13 @@ void Matrix::set_column(ULL_int col) {
  * @param row index of Matrix to insert row
  * @param rowNew new row (list)
  */
-void Matrix::insert_row(ULL_int row, const std::initializer_list<double>& rowNew) {
+void Matrix::insert_row(size_t row, const initializer_list<double>& rowNew) {
     if(_rows == MAX_MATRIX_SIZE)
-        throw std::out_of_range("rows at max size");
+        throw out_of_range("rows at max size");
     if(row >= _rows)
-        throw std::out_of_range("Row does not exist");
+        throw out_of_range("Row does not exist");
     if(_columns != rowNew.size())
-        throw std::invalid_argument("Row must be same size as Matrix rows");
+        throw invalid_argument("Row must be same size as Matrix rows");
     _data.insert(_data.begin() + row, rowNew);
     ++_rows;
 }
@@ -601,16 +602,16 @@ void Matrix::insert_row(ULL_int row, const std::initializer_list<double>& rowNew
  * @param rowNew new row (vector<int>)
  */
 template <typename T>
-void Matrix::insert_row(ULL_int row, const std::vector<T>& rowNew) {
-    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
+void Matrix::insert_row(size_t row, const vector<T>& rowNew) {
+    static_assert(is_arithmetic<T>::value, "Vector must be arithmetic");
     if(_rows == MAX_MATRIX_SIZE)
-        throw std::out_of_range("rows at max size");
+        throw out_of_range("rows at max size");
     if(row >= _rows)
-        throw std::out_of_range("Row does not exist");
+        throw out_of_range("Row does not exist");
     if(_columns != rowNew.size())
-        throw std::invalid_argument("Row must be same size as Matrix rows");
+        throw invalid_argument("Row must be same size as Matrix rows");
     _data.insert(_data.begin() + row, 
-                 std::vector<double>(rowNew.begin(), rowNew.end()));
+                 vector<double>(rowNew.begin(), rowNew.end()));
     ++_rows;
 }
 /**
@@ -619,12 +620,12 @@ void Matrix::insert_row(ULL_int row, const std::vector<T>& rowNew) {
  * @param row index of Matrix to insert row
  * @param value value to fill row
  */
-void Matrix::insert_row(ULL_int row, double value) {
+void Matrix::insert_row(size_t row, double value) {
     if(_rows == MAX_MATRIX_SIZE)
-        throw std::out_of_range("rows at max size");
+        throw out_of_range("rows at max size");
     if(row >= _rows)
-        throw std::out_of_range("Row does not exist");
-    _data.insert(_data.begin() + row, std::vector<double>(_columns, value));
+        throw out_of_range("Row does not exist");
+    _data.insert(_data.begin() + row, vector<double>(_columns, value));
     ++_rows;
 }
 /**
@@ -632,12 +633,12 @@ void Matrix::insert_row(ULL_int row, double value) {
  * 
  * @param row index of Matrix to insert row
  */
-void Matrix::insert_row(ULL_int row) {
+void Matrix::insert_row(size_t row) {
     if(_rows == MAX_MATRIX_SIZE)
-        throw std::out_of_range("rows at max size");
+        throw out_of_range("rows at max size");
     if(row >= _rows)
-        throw std::out_of_range("Row does not exist");
-    _data.insert(_data.begin() + row, std::vector<double>(_columns));
+        throw out_of_range("Row does not exist");
+    _data.insert(_data.begin() + row, vector<double>(_columns));
     ++_rows;
 }
 
@@ -647,15 +648,15 @@ void Matrix::insert_row(ULL_int row) {
  * @param col index of Matrix to insert column
  * @param colNew new column (list)
  */
-void Matrix::insert_column(ULL_int col, const std::initializer_list<double>& colNew) {
+void Matrix::insert_column(size_t col, const initializer_list<double>& colNew) {
     if(_columns == MAX_MATRIX_SIZE)
-        throw std::out_of_range("columns at max size");
+        throw out_of_range("columns at max size");
     if(col >= _columns)
-        throw std::out_of_range("Column does not exist");
+        throw out_of_range("Column does not exist");
     if(_rows != colNew.size())
         throw 
-            std::invalid_argument("Column must be same size as Matrix columns");
-    ULL_int index = 0;
+            invalid_argument("Column must be same size as Matrix columns");
+    size_t index = 0;
     for(auto iter = colNew.begin(); iter != colNew.end(); ++iter, ++index) {
         _data[index].insert(_data[index].begin() + col, *iter);
     }
@@ -668,16 +669,16 @@ void Matrix::insert_column(ULL_int col, const std::initializer_list<double>& col
  * @param colNew new column (vector<int>)
  */
 template <typename T>
-void Matrix::insert_column(ULL_int col, const std::vector<T>& colNew) {
-    static_assert(std::is_arithmetic<T>::value, "Vector must be arithmetic");
+void Matrix::insert_column(size_t col, const vector<T>& colNew) {
+    static_assert(is_arithmetic<T>::value, "Vector must be arithmetic");
     if(_columns == MAX_MATRIX_SIZE)
-        throw std::out_of_range("columns at max size");
+        throw out_of_range("columns at max size");
     if(col >= _columns)
-        throw std::out_of_range("Column does not exist");
+        throw out_of_range("Column does not exist");
     if(_rows != colNew.size())
         throw 
-            std::invalid_argument("Column must be same size as Matrix columns");
-    ULL_int index = 0;
+            invalid_argument("Column must be same size as Matrix columns");
+    size_t index = 0;
     for(auto iter = colNew.begin(); iter != colNew.end(); ++iter, ++index) {
         _data[index].insert(_data[index].begin() + col, *iter);
     }
@@ -689,12 +690,12 @@ void Matrix::insert_column(ULL_int col, const std::vector<T>& colNew) {
  * @param col index of Matrix to insert column
  * @param value value to fill column
  */
-void Matrix::insert_column(ULL_int col, double value) {
+void Matrix::insert_column(size_t col, double value) {
     if(_columns == MAX_MATRIX_SIZE)
-        throw std::out_of_range("columns at max size");
+        throw out_of_range("columns at max size");
     if(col >= _columns)
-        throw std::out_of_range("Column does not exist");
-    ULL_int index = 0;
+        throw out_of_range("Column does not exist");
+    size_t index = 0;
     for(auto iter = _data.begin(); iter != _data.end(); ++iter, ++index) {
         iter->insert(iter->begin() + col, value);
     }
@@ -705,12 +706,12 @@ void Matrix::insert_column(ULL_int col, double value) {
  * 
  * @param col index of Matrix to insert column
  */
-void Matrix::insert_column(ULL_int col) {
+void Matrix::insert_column(size_t col) {
     if(_columns == MAX_MATRIX_SIZE)
-        throw std::out_of_range("columns at max size");
+        throw out_of_range("columns at max size");
     if(col >= _columns)
-        throw std::out_of_range("Column does not exist");
-    ULL_int index = 0;
+        throw out_of_range("Column does not exist");
+    size_t index = 0;
     for(auto iter = _data.begin(); iter != _data.end(); ++iter, ++index) {
         iter->insert(iter->begin() + col, 0);
     }
@@ -724,10 +725,10 @@ void Matrix::insert_column(ULL_int col) {
  * 
  * 
  */
-void Matrix::swap_row(ULL_int r1, ULL_int r2) {
+void Matrix::swap_row(size_t r1, size_t r2) {
     if(r1 >= _rows || r2 >= _rows)
-        throw std::out_of_range("Row does not exist");
-    std::vector<double> tmp = _data[r1];
+        throw out_of_range("Row does not exist");
+    vector<double> tmp = _data[r1];
     _data[r1] = _data[r2];
     _data[r2] = tmp;
 }
@@ -736,11 +737,11 @@ void Matrix::swap_row(ULL_int r1, ULL_int r2) {
  * 
  * 
  */
-void Matrix::swap_column(ULL_int c1, ULL_int c2) {
+void Matrix::swap_column(size_t c1, size_t c2) {
     if(c1 >= _columns || c2 >= _columns)
-        throw std::out_of_range("Column does not exist");
-    std::vector<double> tmp;
-    for(ULL_int i=0; i<_rows; ++i) {
+        throw out_of_range("Column does not exist");
+    vector<double> tmp;
+    for(size_t i=0; i<_rows; ++i) {
         tmp.push_back(_data[i][c1]);
         _data[i][c1] = _data[i][c2];
         _data[i][c2] = tmp[i];
@@ -753,7 +754,7 @@ void Matrix::swap_column(ULL_int c1, ULL_int c2) {
  */
 void Matrix::pop_back_row() {
     if(empty())
-        throw std::domain_error("No values to pop");
+        throw domain_error("No values to pop");
     if(_rows == 1) {
         clear();
     } else {
@@ -767,7 +768,7 @@ void Matrix::pop_back_row() {
  */
 void Matrix::pop_back_column() {
     if(empty())
-        throw std::domain_error("No values to pop");
+        throw domain_error("No values to pop");
     if(_columns == 1) {
         clear();
     } else {
@@ -783,11 +784,11 @@ void Matrix::pop_back_column() {
  * 
  * @param row index of row in Matrix
  */
-void Matrix::erase_row(ULL_int row) {
+void Matrix::erase_row(size_t row) {
     if(empty())
-        throw std::domain_error("No values to erase");
+        throw domain_error("No values to erase");
     if(row >= _rows)
-        throw std::out_of_range("Row does not exist");
+        throw out_of_range("Row does not exist");
     if(_rows == 1) {
         clear();
     } else {
@@ -800,11 +801,11 @@ void Matrix::erase_row(ULL_int row) {
  * 
  * @param col index of column in Matrix
  */
-void Matrix::erase_column(ULL_int col) {
+void Matrix::erase_column(size_t col) {
     if(empty())
-        throw std::domain_error("No values to erase");
+        throw domain_error("No values to erase");
     if(col >= _columns)
-        throw std::out_of_range("Row does not exist");
+        throw out_of_range("Row does not exist");
     if(_columns == 1) {
         clear();
     } else {
@@ -836,11 +837,11 @@ void Matrix::augment(const Matrix& other, bool seperator) {
         return;
     }
     if(_rows != other._rows)
-        throw std::invalid_argument("Matricies must have same column length");
+        throw invalid_argument("Matricies must have same column length");
     if(seperator)
         _augment_lines.insert(_columns);
     _columns += other._columns;
-    for(ULL_int i=0; i<_rows; ++i) {
+    for(size_t i=0; i<_rows; ++i) {
         for(double x : other._data[i]) {
             _data[i].push_back(x);
         }
@@ -869,14 +870,14 @@ void Matrix::operator=(const Matrix& other) {
  */
 Matrix Matrix::operator+(const Matrix& other) const {
     if(empty() || other.empty())
-        throw std::domain_error("Matricies must have data");
+        throw domain_error("Matricies must have data");
     if(other._columns != _columns || other._rows != _rows)
-        throw std::invalid_argument
+        throw invalid_argument
             ("Matricies must have same dimentions for addition");
     Matrix sum;
-    for(ULL_int i=0; i<_rows; ++i) {
-        std::vector<double> rowNew;
-        for(ULL_int j=0; j<_columns; ++j) {
+    for(size_t i=0; i<_rows; ++i) {
+        vector<double> rowNew;
+        for(size_t j=0; j<_columns; ++j) {
             rowNew.push_back(_data[i][j] + other._data[i][j]);
         }
         sum.push_back_row(rowNew);
@@ -889,14 +890,14 @@ Matrix Matrix::operator+(const Matrix& other) const {
  */
 Matrix Matrix::operator-(const Matrix& other) const {
     if(empty() || other.empty())
-        throw std::domain_error("Matricies must have data");
+        throw domain_error("Matricies must have data");
     if(other._columns != _columns || other._rows != _rows)
-        throw std::invalid_argument
+        throw invalid_argument
             ("Matricies must have same dimentions for subtraction");
     Matrix sum;
-    for(ULL_int i=0; i<_rows; ++i) {
-        std::vector<double> rowNew;
-        for(ULL_int j=0; j<_columns; ++j) {
+    for(size_t i=0; i<_rows; ++i) {
+        vector<double> rowNew;
+        for(size_t j=0; j<_columns; ++j) {
             rowNew.push_back(_data[i][j] - other._data[i][j]);
         }
         sum.push_back_row(rowNew);
@@ -926,16 +927,16 @@ Matrix Matrix::operator-=(const Matrix& other) {
  */
 Matrix Matrix::operator*(const Matrix& other) const {
     if(empty() || other.empty())
-        throw std::domain_error("Matricies must have data");
+        throw domain_error("Matricies must have data");
     if(_columns != other._rows)
-        throw std::invalid_argument
+        throw invalid_argument
             ("Invalid Matrix dimentions for multiplication");
     Matrix product;
-    for(ULL_int i=0; i<_rows; ++i) {
-        std::vector<double> rowNew;
-        for(ULL_int j=0; j<other._columns; ++j) {
+    for(size_t i=0; i<_rows; ++i) {
+        vector<double> rowNew;
+        for(size_t j=0; j<other._columns; ++j) {
             double sum = 0;
-            for(ULL_int k=0; k<_columns; ++k) {
+            for(size_t k=0; k<_columns; ++k) {
                 sum += _data[i][k] * other._data[k][j];
             }
             rowNew.push_back(sum);
@@ -951,10 +952,10 @@ Matrix Matrix::operator*(const Matrix& other) const {
  */
 Matrix Matrix::operator*(double scale) const {
     if(empty())
-        throw std::domain_error("Matrix must have data");
+        throw domain_error("Matrix must have data");
     Matrix product;
     for(auto rowIter = _data.begin(); rowIter != _data.end(); ++rowIter) {
-        std::vector<double> rowNew;
+        vector<double> rowNew;
         for(auto iter = rowIter->begin(); iter != rowIter->end(); ++iter) {
             rowNew.push_back(*iter * scale);
         }
@@ -975,7 +976,7 @@ Matrix operator*(double scale, const Matrix& rhs) {
  */
 Matrix Matrix::operator*=(double scale) {
     if(empty())
-        throw std::domain_error("Matrix must have data");
+        throw domain_error("Matrix must have data");
     for(auto rowIter = _data.begin(); rowIter != _data.end(); ++rowIter) {
         for(auto iter = rowIter->begin(); iter != rowIter->end(); ++iter) {
             *iter *= scale;
@@ -990,12 +991,12 @@ Matrix Matrix::operator*=(double scale) {
  */
 Matrix Matrix::operator/(double scale) const {
     if(scale == 0)
-        throw std::invalid_argument("scale cannot be zero");
+        throw invalid_argument("scale cannot be zero");
     if(empty())
-        throw std::domain_error("Matrix must have data");
+        throw domain_error("Matrix must have data");
     Matrix quotient;
     for(auto rowIter = _data.begin(); rowIter != _data.end(); ++rowIter) {
-        std::vector<double> rowNew;
+        vector<double> rowNew;
         for(auto iter = rowIter->begin(); iter != rowIter->end(); ++iter) {
             rowNew.push_back(*iter / scale);
         }
@@ -1009,9 +1010,9 @@ Matrix Matrix::operator/(double scale) const {
  */
 Matrix Matrix::operator/=(double scale) {
     if(scale == 0)
-        throw std::invalid_argument("scale cannot be zero");
+        throw invalid_argument("scale cannot be zero");
     if(empty())
-        throw std::domain_error("Matrix must have data");
+        throw domain_error("Matrix must have data");
     for(auto rowIter = _data.begin(); rowIter != _data.end(); ++rowIter) {
         for(auto iter = rowIter->begin(); iter != rowIter->end(); ++iter) {
             *iter /= scale;
@@ -1025,17 +1026,16 @@ Matrix Matrix::operator/=(double scale) {
  * 
  */
 template <typename T>
-Matrix Matrix::operator*(const std::vector<T>& vector) const {
+Matrix Matrix::operator*(const vector<T>& vec) const {
     if(empty())
-        throw std::domain_error("Matrix must have data");
-    if(_columns != vector.size())
-        throw std::invalid_argument
-            ("Vector must be same size as number of columns");
-    std::vector<double> product;
+        throw domain_error("Matrix must have data");
+    if(_columns != vec.size())
+        throw invalid_argument("Vector must be same size as number of columns");
+    vector<double> product;
     for(auto rowIter = _data.begin(); rowIter != _data.end(); ++rowIter) {
         double sum = 0;
-        ULL_int index = 0;
-        for(auto iter = vector.begin(); iter != vector.end(); ++iter) {
+        size_t index = 0;
+        for(auto iter = vec.begin(); iter != vec.end(); ++iter) {
             sum += *iter * rowIter->at(index++);
         }
         product.push_back(sum);
@@ -1047,7 +1047,7 @@ Matrix Matrix::operator*(const std::vector<T>& vector) const {
  * 
  */
 template <typename T>
-Matrix operator*(const std::vector<T>& vector, const Matrix& rhs) {
+Matrix operator*(const vector<T>& vector, const Matrix& rhs) {
     return (rhs.transpose() * vector).transpose();
 }
 
@@ -1058,42 +1058,42 @@ Matrix operator*(const std::vector<T>& vector, const Matrix& rhs) {
 double Matrix::vec_dot() const {
     double sum = 0;
     if(_columns == 1) {
-        for(ULL_int i=0; i<_rows; ++i) {
+        for(size_t i=0; i<_rows; ++i) {
             sum += _data[i][0] * _data[i][0];
         }
         return sum;
     } else if(_rows == 1) {
-        for(ULL_int i=0; i<_columns; ++i) {
+        for(size_t i=0; i<_columns; ++i) {
             sum += _data[0][i] * _data[0][i];
         }
         return sum;
     }
-    throw std::invalid_argument("Must use vector");
+    throw invalid_argument("Must use vector");
 }
 /**
  * @brief Takes dot product of two vector matricies
  * 
  */
 double Matrix::vec_dot(const Matrix& other) const {
-    std::vector<double> leftVec, rightVec;
+    vector<double> leftVec, rightVec;
     if(_columns == 1) {
         leftVec = get_column(0);
     } else if(_rows == 1) {
         leftVec = get_row(0);
     } else {
-        throw std::invalid_argument("Must use vectors");
+        throw invalid_argument("Must use vectors");
     }
     if(other._columns == 1) {
         rightVec = other.get_column(0);
     } else if(other._rows == 1) {
         rightVec = other.get_row(0);
     } else {
-        throw std::invalid_argument("Must use vectors");
+        throw invalid_argument("Must use vectors");
     }
     if(leftVec.size() != rightVec.size())
-        throw std::invalid_argument("Vectors must be same size");
+        throw invalid_argument("Vectors must be same size");
     double sum = 0;
-    for(ULL_int i=0; i<leftVec.size(); ++i) {
+    for(size_t i=0; i<leftVec.size(); ++i) {
         sum += leftVec[i] * rightVec[i];
     }
     return sum;
@@ -1109,13 +1109,13 @@ double Matrix::vec_dot(const Matrix& other) const {
  */
 double Matrix::determinant() const{
     if(empty())
-        throw std::invalid_argument("Matrix must have data");
+        throw invalid_argument("Matrix must have data");
     if(_columns != _rows)
-        throw std::invalid_argument("Matrix must be square");
+        throw invalid_argument("Matrix must be square");
     Matrix M(_data);
     double scale = 1;
-    for(ULL_int i=0; i<_columns; ++i) {
-        ULL_int row = i; // starting row == number of past loops
+    for(size_t i=0; i<_columns; ++i) {
+        size_t row = i; // starting row == number of past loops
         while(_is_double_sub_zero(M._data[row][i])) {
             if(++row == _rows) { // if at end, means at least one 0 on diagonal
                 return 0;
@@ -1128,13 +1128,13 @@ double Matrix::determinant() const{
         for(row=i+1; row<_rows; ++row) { // sweep rows below
             if(!_is_double_sub_zero(M._data[row][i])) {
                 double coeff = M._data[row][i] / M._data[i][i];
-                for(ULL_int j=i; j<_columns; ++j) {
+                for(size_t j=i; j<_columns; ++j) {
                     M._data[row][j] -= coeff * M._data[i][j];
                 }
             }
         }
     }
-    for(ULL_int i=0; i<_rows; ++i) { // multiply diagonal
+    for(size_t i=0; i<_rows; ++i) { // multiply diagonal
         scale *= M._data[i][i];
     }
     return scale;
@@ -1147,9 +1147,9 @@ double Matrix::determinant() const{
  */
 Matrix Matrix::transpose() const {
     if(empty())
-        throw std::invalid_argument("Matrix cannot be empty");
+        throw invalid_argument("Matrix cannot be empty");
     Matrix M;
-    for(ULL_int i = 0; i<_columns; ++i) {
+    for(size_t i = 0; i<_columns; ++i) {
         M.push_back_row(get_column(i));
     }
     return M;
@@ -1161,11 +1161,11 @@ Matrix Matrix::transpose() const {
  */
 Matrix Matrix::rref() const {
     if(empty())
-        throw std::invalid_argument("Matrix cannot be empty");
+        throw invalid_argument("Matrix cannot be empty");
     Matrix M = *this;
-    ULL_int lead = 0; // column of current leading value
-    for(ULL_int i=0; i<_rows && lead<_columns; ++i) {
-        ULL_int row = i; // current row (start at top of unchanged lead values)
+    size_t lead = 0; // column of current leading value
+    for(size_t i=0; i<_rows && lead<_columns; ++i) {
+        size_t row = i; // current row (start at top of unchanged lead values)
         while(_is_double_sub_zero(M._data[row][lead])) { // while zero
             ++row;
             if(row == _rows) {
@@ -1176,15 +1176,15 @@ Matrix Matrix::rref() const {
                 }
             }
         }
-        std::swap(M._data[row], M._data[i]);
+        swap(M._data[row], M._data[i]);
         double *leadingVals = new double[_rows]; // leading values at col: lead
-        for(ULL_int k=0; k<_rows; ++k) {
+        for(size_t k=0; k<_rows; ++k) {
             leadingVals[k] = M._data[k][lead];
         }
-        for(ULL_int j=lead; j<_columns; ++j) {
+        for(size_t j=lead; j<_columns; ++j) {
             M._data[i][j] /= leadingVals[i];
             double tmp = M._data[i][j];
-            for(ULL_int k=0; k<_rows; ++k) {
+            for(size_t k=0; k<_rows; ++k) {
                 if(k != i && !_is_double_sub_zero(leadingVals[k])) {
                     M._data[k][j] -= leadingVals[k] * tmp;
                 }
@@ -1202,22 +1202,22 @@ Matrix Matrix::rref() const {
  */
 Matrix Matrix::inverse() const {
     if(empty())
-        throw std::invalid_argument("Matrix must have data");
+        throw invalid_argument("Matrix must have data");
     if(_columns != _rows)
-        throw std::invalid_argument("Matrix must be square");
+        throw invalid_argument("Matrix must be square");
     if(_is_double_sub_zero(determinant())) {
-        std::cerr << "Matrix not invertable";
+        cerr << "Matrix not invertable";
         return Matrix();
     }
     Matrix M(_data);
-    ULL_int len = _rows;
-    for(ULL_int i=0; i<len; ++i) {
-        std::vector<double> idCol(len);
+    size_t len = _rows;
+    for(size_t i=0; i<len; ++i) {
+        vector<double> idCol(len);
         idCol[i] = 1;
         M.push_back_column(idCol);
     }
     Matrix I = M.rref();
-    for(ULL_int i=0; i<len; ++i) {
+    for(size_t i=0; i<len; ++i) {
         I.erase_column(0);
     }
     return I;
@@ -1226,16 +1226,16 @@ Matrix Matrix::inverse() const {
 /**
  * @brief Finds QR decompisition of Matrix
  * 
- * @return std::pair<Matrix,Matrix>; first = Q, second = R 
+ * @return pair<Matrix,Matrix>; first = Q, second = R 
  */
 Matrix::MatrixPair Matrix::qr() const {
     if(empty())
-        throw std::invalid_argument("Matrix must have data");
+        throw invalid_argument("Matrix must have data");
     Matrix Q_matrix, R_matrix(_columns, _columns);
-    for(ULL_int i=0; i<_columns; ++i) {
+    for(size_t i=0; i<_columns; ++i) {
         Matrix col = get_column(i);
         Matrix colPerp = col;
-        for(ULL_int j=0; j<i; ++j) {
+        for(size_t j=0; j<i; ++j) {
             Matrix qCol = Q_matrix.get_column(j);
             float dot = col.vec_dot(qCol);
             R_matrix.at(j, i) = dot;
@@ -1243,7 +1243,7 @@ Matrix::MatrixPair Matrix::qr() const {
         }
         float colPerpLen = sqrt(colPerp.vec_dot());
         if(colPerpLen == 0) {
-            throw std::invalid_argument("Columns must be linearly independant");
+            throw invalid_argument("Columns must be linearly independant");
         }
         R_matrix.at(i, i) = colPerpLen;
         Q_matrix.augment(colPerp/colPerpLen, false);
@@ -1257,19 +1257,19 @@ Matrix::MatrixPair Matrix::qr() const {
  */
 Matrix Matrix::qr(QR output) const {
     if(empty())
-        throw std::invalid_argument("Matrix must have data");
+        throw invalid_argument("Matrix must have data");
     if(output == Q) {
         Matrix Q_matrix;
-        for(ULL_int i=0; i<_columns; ++i) {
+        for(size_t i=0; i<_columns; ++i) {
             Matrix col = get_column(i);
             Matrix colPerp = col;
-            for(ULL_int j=0; j<i; ++j) {
+            for(size_t j=0; j<i; ++j) {
                 Matrix qCol = Q_matrix.get_column(j);
                 colPerp -= qCol * col.vec_dot(qCol);
             }
             float colPerpLen = sqrt(colPerp.vec_dot());
             if(colPerpLen == 0) {
-                throw std::invalid_argument("Columns must be linearly independant");
+                throw invalid_argument("Columns must be linearly independant");
             }
             Q_matrix.augment(colPerp/colPerpLen, false);
         }
@@ -1278,7 +1278,7 @@ Matrix Matrix::qr(QR output) const {
     if(output == R) {
         return qr().second;
     }
-    throw std::invalid_argument("Invalid param must be Matrix::Q or Matrix::R");
+    throw invalid_argument("Invalid param must be Matrix::Q or Matrix::R");
 }
 
 /**
@@ -1288,12 +1288,12 @@ Matrix Matrix::qr(QR output) const {
  *                  (defaults to 10^-12)
  * @param max_iterations max number of iterations of QR algorithm
  */
-std::vector<double> 
+vector<double> 
 Matrix::eigenvalues_approx(double percision, int max_iterations) const {
     if(empty())
-        throw std::invalid_argument("Matrix must have data");
+        throw invalid_argument("Matrix must have data");
     if(_columns != _rows)
-        throw std::invalid_argument("Matrix must be square");
+        throw invalid_argument("Matrix must be square");
     bool is_upper = false;
     Matrix tmp = _data;
     int count;
@@ -1301,18 +1301,18 @@ Matrix::eigenvalues_approx(double percision, int max_iterations) const {
         MatrixPair QR = tmp.qr();
         tmp = QR.second * QR.first;
         is_upper = true;
-        for(ULL_int row=0; row<_rows && is_upper; row++) {
-            for(ULL_int col=0; col<row && is_upper; col++) {
-                if(std::abs(tmp._data[row][col]) > percision) {
+        for(size_t row=0; row<_rows && is_upper; row++) {
+            for(size_t col=0; col<row && is_upper; col++) {
+                if(abs(tmp._data[row][col]) > percision) {
                     is_upper = false;
                 }
             }
         }
     }
     if(!is_upper)
-        throw std::runtime_error("Could not find values, could be imaginary");
-    std::vector<double> output;
-    for(ULL_int i=0; i<_rows; ++i) {
+        throw runtime_error("Could not find values, could be imaginary");
+    vector<double> output;
+    for(size_t i=0; i<_rows; ++i) {
         output.push_back(tmp._data[i][i]);
     }
     return output;
@@ -1328,24 +1328,24 @@ Matrix::eigenvalues_approx(double percision, int max_iterations) const {
  * @param os output stream
  * @param mat Matrix object 
  */
-std::ostream& operator<<(std::ostream &os, const Matrix& mat) {
+ostream& operator<<(ostream &os, const Matrix& mat) {
     /* Find max integer lenghts of each column */
     int *intMaxLen = new int[mat._columns]; // set to 1s
-    for(ULL_int i=0; i<mat._columns; ++i) {
+    for(size_t i=0; i<mat._columns; ++i) {
         intMaxLen[i] = 0;
     }
     bool allInt = true;
-    for(std::vector<double> row : mat._data) {
-        for(ULL_int i=0; i<mat._columns; ++i) {
+    for(vector<double> row : mat._data) {
+        for(size_t i=0; i<mat._columns; ++i) {
             double intPart, floatPart = modf(row[i], &intPart);
-            int intLen = std::to_string((int)(intPart+0.5-(row[i]<0))).length();
+            int intLen = to_string((int)(intPart+0.5-(row[i]<0))).length();
             if((int)(intPart+0.5-(row[i]<0)) == 0 && row[i] < 0) {
                 ++intLen;
             }
             if(intLen > intMaxLen[i]) {
                 intMaxLen[i] = intLen;
             }
-            if(std::abs(floatPart + mat._floatPrecis) > 2 * mat._floatPrecis) {
+            if(abs(floatPart + mat._floatPrecis) > 2 * mat._floatPrecis) {
                 allInt = false;
             }
         }
@@ -1354,8 +1354,8 @@ std::ostream& operator<<(std::ostream &os, const Matrix& mat) {
     if(!allInt) {
         float_length = mat._floatLen;
     }
-    os << std::fixed << std::setprecision(float_length);
-    for(ULL_int row=0; row<mat._rows; ++row) {
+    os << fixed << setprecision(float_length);
+    for(size_t row=0; row<mat._rows; ++row) {
         os << "|";
         if(mat._niceBrackets && row == 0)
             os << "‾";
@@ -1363,25 +1363,25 @@ std::ostream& operator<<(std::ostream &os, const Matrix& mat) {
             os << "_"; 
         else
             os << " ";
-        for(ULL_int col=0; col<mat._columns; ++col) {
+        for(size_t col=0; col<mat._columns; ++col) {
             if(mat._augment_lines.find(col) != mat._augment_lines.end())
                 os << "|";
             os << " " 
-               << std::setw(intMaxLen[col] + float_length + (float_length != 0)); 
+               << setw(intMaxLen[col] + float_length + (float_length != 0)); 
             if(_is_double_sub_zero(mat._data[row][col]))
-                os << std::setprecision(0) << 0 
-                   << std::setprecision(float_length) << " ";
+                os << setprecision(0) << 0 
+                   << setprecision(float_length) << " ";
             else
                 os << mat._data[row][col] << " ";
             // if(col != mat._columns-1)
             //     os << "  ";
         }
         if(mat._niceBrackets && row == 0)
-            os << "‾|" << std::endl;
+            os << "‾|" << endl;
         else if(row == mat._rows-1)
-            os << "_|" << std::endl;
+            os << "_|" << endl;
         else
-            os << " |" << std::endl;
+            os << " |" << endl;
     }
     delete[] intMaxLen;
     return os;
@@ -1393,7 +1393,7 @@ std::ostream& operator<<(std::ostream &os, const Matrix& mat) {
  */
 void Matrix::output_floatLen(unsigned int len) {
     if(len > MAX_FLOAT_LEN)
-        throw std::invalid_argument
+        throw invalid_argument
             ("float length must be less than MAX_FLOAT_LEN");
     _floatLen = len;
     _floatPrecis = pow(10, -(_floatLen + 1));
@@ -1405,41 +1405,41 @@ void Matrix::output_floatLen(unsigned int len) {
 #pragma region EXPLICIT_INSTANTIATIONS
 
 /* int */
-template Matrix::Matrix(const std::vector<std::vector<int>>& in);
-template Matrix::Matrix(const std::vector<int>& in, orientation type);
-template void Matrix::push_back_row(const std::vector<int>& row);
-template void Matrix::push_back_column(const std::vector<int>& col);
-template void Matrix::set_row(ULL_int row, const std::vector<int>& rowNew);
-template void Matrix::set_column(ULL_int col, const std::vector<int>& colNew);
-template void Matrix::insert_row(ULL_int row, const std::vector<int>& rowNew);
-template void Matrix::insert_column(ULL_int col, const std::vector<int>& colNew);
-template Matrix Matrix::operator*(const std::vector<int>& vector) const;
-template Matrix operator*(const std::vector<int>& vector, const Matrix& rhs);
+template Matrix::Matrix(const vector<vector<int>>& in);
+template Matrix::Matrix(const vector<int>& in, orientation type);
+template void Matrix::push_back_row(const vector<int>& row);
+template void Matrix::push_back_column(const vector<int>& col);
+template void Matrix::set_row(size_t row, const vector<int>& rowNew);
+template void Matrix::set_column(size_t col, const vector<int>& colNew);
+template void Matrix::insert_row(size_t row, const vector<int>& rowNew);
+template void Matrix::insert_column(size_t col, const vector<int>& colNew);
+template Matrix Matrix::operator*(const vector<int>& vector) const;
+template Matrix operator*(const vector<int>& vector, const Matrix& rhs);
 
 
 /* double */
-template Matrix::Matrix(const std::vector<std::vector<double>>& in);
-template Matrix::Matrix(const std::vector<double>& in, orientation type);
-template void Matrix::push_back_row(const std::vector<double>& row);
-template void Matrix::push_back_column(const std::vector<double>& col);
-template void Matrix::set_row(ULL_int row, const std::vector<double>& rowNew);
-template void Matrix::set_column(ULL_int col, const std::vector<double>& colNew);
-template void Matrix::insert_row(ULL_int row, const std::vector<double>& rowNew);
-template void Matrix::insert_column(ULL_int col, const std::vector<double>& colNew);
-template Matrix Matrix::operator*(const std::vector<double>& vector) const;
-template Matrix operator*(const std::vector<double>& vector, const Matrix& rhs);
+template Matrix::Matrix(const vector<vector<double>>& in);
+template Matrix::Matrix(const vector<double>& in, orientation type);
+template void Matrix::push_back_row(const vector<double>& row);
+template void Matrix::push_back_column(const vector<double>& col);
+template void Matrix::set_row(size_t row, const vector<double>& rowNew);
+template void Matrix::set_column(size_t col, const vector<double>& colNew);
+template void Matrix::insert_row(size_t row, const vector<double>& rowNew);
+template void Matrix::insert_column(size_t col, const vector<double>& colNew);
+template Matrix Matrix::operator*(const vector<double>& vector) const;
+template Matrix operator*(const vector<double>& vector, const Matrix& rhs);
 
 
 /* float */
-template Matrix::Matrix(const std::vector<std::vector<float>>& in);
-template Matrix::Matrix(const std::vector<float>& in, orientation type);
-template void Matrix::push_back_row(const std::vector<float>& row);
-template void Matrix::push_back_column(const std::vector<float>& col);
-template void Matrix::set_row(ULL_int row, const std::vector<float>& rowNew);
-template void Matrix::set_column(ULL_int col, const std::vector<float>& colNew);
-template void Matrix::insert_row(ULL_int row, const std::vector<float>& rowNew);
-template void Matrix::insert_column(ULL_int col, const std::vector<float>& colNew);
-template Matrix Matrix::operator*(const std::vector<float>& vector) const;
-template Matrix operator*(const std::vector<float>& vector, const Matrix& rhs);
+template Matrix::Matrix(const vector<vector<float>>& in);
+template Matrix::Matrix(const vector<float>& in, orientation type);
+template void Matrix::push_back_row(const vector<float>& row);
+template void Matrix::push_back_column(const vector<float>& col);
+template void Matrix::set_row(size_t row, const vector<float>& rowNew);
+template void Matrix::set_column(size_t col, const vector<float>& colNew);
+template void Matrix::insert_row(size_t row, const vector<float>& rowNew);
+template void Matrix::insert_column(size_t col, const vector<float>& colNew);
+template Matrix Matrix::operator*(const vector<float>& vector) const;
+template Matrix operator*(const vector<float>& vector, const Matrix& rhs);
 
 #pragma endregion // EXPLICIT_INSTANTIATIONS
