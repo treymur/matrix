@@ -4,32 +4,35 @@
 
 #include <iostream>
 #include <vector>
+#include <set>
 // #include <initializer_list>  /* included in <vector> */
 
 #define ULL_int unsigned long long int
 
+extern bool NICE_BRACKET;
 
 
 class Matrix {
 public:
 
     enum orientation {
-        column = 0, // column / vertical
-        c = 0, // column / vertical
-        row = 1, // row / horizontal
-        r = 1, // row / horizontal
-        vertical = 0, // column / vertical
-        v = 0, // column / vertical
-        horizontal = 1, // row / horizontal
-        h = 1 // row / horizontal
-
+        column,
+        row
     };
+
+    enum QR {
+        Q,
+        R
+    };
+
+    typedef std::pair<Matrix,Matrix> MatrixPair;
 
     /* Constructors */
 
     Matrix();
     Matrix(std::initializer_list<std::initializer_list<double>> in);
-    template <typename T> Matrix(const std::vector<std::vector<T>>& in);
+    template <typename T> 
+        Matrix(const std::vector<std::vector<T>>& in);
     Matrix(std::initializer_list<double> in, orientation type=column);
     template <typename T> 
         Matrix(const std::vector<T>& in, orientation type=column);
@@ -95,21 +98,31 @@ public:
     void erase_column(ULL_int col);
     void clear();
 
-    void augment(const Matrix& other);
+    void augment(const Matrix& other, bool seperator=true);
     void operator=(const Matrix& other);
 
     /* Binary math functions */
 
     Matrix operator+(const Matrix& other) const;
+    Matrix operator-(const Matrix& other) const;
+    Matrix operator+=(const Matrix& other);
+    Matrix operator-=(const Matrix& other);
+
     Matrix operator*(const Matrix& other) const;
 
     Matrix operator*(double scale) const;
     friend Matrix operator*(double scale, const Matrix& rhs);
     Matrix operator*=(double scale);
+    Matrix operator/(double scale) const;
+    Matrix operator/=(double scale);
 
-    template <typename T> Matrix operator*(const std::vector<T>& vector) const;
+    template <typename T> 
+        Matrix operator*(const std::vector<T>& vector) const;
     template <typename T> friend 
         Matrix operator*(const std::vector<T>& vector, const Matrix& rhs);
+    
+    double vec_dot() const;
+    double vec_dot(const Matrix& other) const;
 
     /* Uniary math functions */
 
@@ -117,6 +130,10 @@ public:
     Matrix transpose() const;
     Matrix rref() const;
     Matrix inverse() const;
+    MatrixPair qr() const;
+    Matrix qr(QR output) const;
+    std::vector<double> eigenvalues_approx(double percision=1e-12, 
+                                           int max_iterations=100000) const;
 
     /* Output */
 
@@ -129,6 +146,8 @@ private:
     ULL_int _columns; // number of columns / size of rows
     unsigned int _floatLen; // float length when printing matrix
     double _floatPrecis; // assumed float percision (based on _floatLen)
+    std::set<ULL_int> _augment_lines; // location of any augment lines
+    bool _niceBrackets = NICE_BRACKET; // weither to use upperscore in brackets
 };
 
 #endif
